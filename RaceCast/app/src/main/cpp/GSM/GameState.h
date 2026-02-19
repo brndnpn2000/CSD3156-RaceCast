@@ -15,4 +15,6 @@ class GameState
 
 };
 
+void convertSecondsToMinutes(const int &in, int &min, int &seconds);
+
 #endif
