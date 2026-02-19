@@ -28,6 +28,8 @@ private:
     UI_QUAD start_light;
     float race_timer;
     float end_timer;
+    int race_minutes;
+    int race_seconds;
 
     // INPUT
     UI_QUAD accelerator;

@@ -4,8 +4,8 @@ void Map1::Init()
 {
     AssetManager::GetInstance().LoadTexture("image/pedals.png");
     AssetManager::GetInstance().LoadTexture("image/numbering.png");
-    AssetManager::GetInstance().LoadTexture("image/map1_bg.png");;
-    AssetManager::GetInstance().LoadTexture("image/night_bg.png");;
+    AssetManager::GetInstance().LoadTexture("image/map1_bg.png");
+    AssetManager::GetInstance().LoadTexture("image/night_bg.png");
     AssetManager::GetInstance().LoadTexture("image/fender.png");
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
@@ -92,9 +92,15 @@ void Map1::Update(float dt)
     else // game running
     {
         if (CheckpointManager::GetInstance().isEnded())
+        {
             end_timer += dt;
+        }
         else
+        {
             race_timer += dt;
+            // convert seconds -> minutes + seconds
+            convertSecondsToMinutes((int)race_timer, race_minutes, race_seconds);
+        }
 
         // input
         bool forward = accelerator.Hold();
