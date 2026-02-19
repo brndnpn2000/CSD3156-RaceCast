@@ -25,6 +25,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         External/stb_impl.cpp
         Game/GameObject.cpp
         Game/Environment.cpp
+        Game/Environment.tpp
         Game/CheckpointManager.cpp
 )
 
