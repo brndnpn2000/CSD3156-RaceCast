@@ -11,6 +11,7 @@
 #include "MenuState.h"
 #include "ShaderManager.h"
 #include "InputManager.h"
+#include "Timer.h"
 #include "Globals.h"
 
 #define LOG_TAG "RaceCast-Native"
@@ -58,7 +59,8 @@ extern "C" {
     JNIEXPORT void JNICALL
     Java_com_example_racecast_MyRenderer_nativeRender(JNIEnv *env, jobject thiz)
     {
-        float deltaTime = 0.016f;
+        TIMER.Update();
+        float deltaTime = TIMER.GetDeltaTime();
         InputManager::GetInstance().Update();
         GSM.Update(deltaTime);
         GSM.Render();

@@ -70,7 +70,7 @@ void Map1::Update(float dt)
 {
     // start timer
     start_light_timer += dt;
-    if (start_light_timer < 3.f) // game starting
+    if (start_light_timer < 3.1f) // game starting
     {
         TextureCoordinate start_tc;
         float offset = 1.f / 4.f;
