@@ -8,10 +8,12 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/night_bg.png");;
     AssetManager::GetInstance().LoadTexture("image/fender.png");
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
+    AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
 
     start_light_timer = 0.f;
     race_timer = 0.f;
+    end_timer = 0.f;
     aspect_ratio = (float)Globals::screen_size.first / (float)Globals::screen_size.second;
 
     environment.DebugAssetInit();
@@ -30,11 +32,7 @@ void Map1::Init()
             };
     CheckpointManager::GetInstance().Init<10,10>(environment);
 
-
-
-    debug_toggle = UI_QUAD(0.7,0.7,0.2,0.3,"");
-
-    player.position = Vector2D(1.5,1.5);
+    player.position = Vector2D(5.5,1.5);
     player.size = Vector2D(0.7,0.45);
 
     TextureCoordinate acc, rev;
@@ -61,16 +59,18 @@ void Map1::Init()
     slash_tc.GetTL()[0] = slash_tc.GetBL()[0];
     slash = UI_QUAD(0.6,0.5,font_height * 1.2f,font_width * 1.2f,"numbering.png", slash_tc);
 
+
+    // End Screen
+    end_screen_bg = UI_QUAD(0.f,0.f,2.f,2.f,"mainmenu_bg.png");
+    retry_button = UI_QUAD(0.6,-0.5,font_height * 1.2f,font_width * 1.2f,"numbering.png", slash_tc);
+    back_to_menu_button = UI_QUAD(-0.6,-0.5,font_height * 1.2f,font_width * 1.2f,"numbering.png", slash_tc);
 }
 
 void Map1::Update(float dt)
 {
-    // removable
-    if (debug_toggle.Touched()) render_debug = !render_debug;
-
     // start timer
     start_light_timer += dt;
-    if (start_light_timer < 3.1f) // game starting
+    if (start_light_timer < 3.f) // game starting
     {
         TextureCoordinate start_tc;
         float offset = 1.f / 4.f;
@@ -80,13 +80,21 @@ void Map1::Update(float dt)
         start_tc.GetBR()[1] = start_tc.GetBL()[1];
         start_light = UI_QUAD(0.f,0.5f,0.7f,0.55f,"starting_light.png", start_tc);
     }
-    else if (current_lap_int > total_lap_int) // game over
+    else if (CheckpointManager::GetInstance().isEnded() && end_timer > 1.0f) // game over
     {
 
+        if (retry_button.Touched())
+            Reset();
+
+        if (back_to_menu_button.Touched())
+            GSM.ChangeState(new MenuState);
     }
     else // game running
     {
-        race_timer += dt;
+        if (CheckpointManager::GetInstance().isEnded())
+            end_timer += dt;
+        else
+            race_timer += dt;
 
         // input
         bool forward = accelerator.Hold();
@@ -104,12 +112,7 @@ void Map1::Update(float dt)
         }
     }
 
-
-
     // update rendering objects
-        // update counter
-
-
         // current lap counter
     current_lap_int = CheckpointManager::GetInstance().GetLapCount();
     current_lap_tc.GetBL()[0] = tc_offset * (float)current_lap_int;
@@ -137,22 +140,25 @@ void Map1::RenderGame()
 
 void Map1::RenderUI()
 {
-    environment.RenderMinimap(player.position.x, player.position.y);
-    if (render_debug)
+    if (!(CheckpointManager::GetInstance().isEnded() && end_timer > 1.0f)) // game running
     {
-        environment.RenderDebug();
-        player.RenderDebug<10,10>(environment);
+        environment.RenderMinimap(player.position.x, player.position.y);
+
+        accelerator.DrawUI();
+        reverse.DrawUI();
+        current_lap.DrawUI();
+        slash.DrawUI();
+        total_lap.DrawUI();
+
+        // render "traffic light"
+        if (start_light_timer < 4.0f) start_light.DrawUI();
     }
-
-    accelerator.DrawUI();
-    reverse.DrawUI();
-    debug_toggle.DrawUI();
-    current_lap.DrawUI();
-    slash.DrawUI();
-    total_lap.DrawUI();
-
-    // render "traffic light"
-    if (start_light_timer < 4.0f) start_light.DrawUI();
+    else // end screen comes out
+    {
+        end_screen_bg.DrawUI();
+        retry_button.DrawUI();
+        back_to_menu_button.DrawUI();
+    }
 }
 
 void Map1::Exit()
@@ -162,6 +168,6 @@ void Map1::Exit()
 
 void Map1::Reset()
 {
-    GameStateManager::GetInstance().ChangeState(new Map1);
+    GSM.ChangeState(new Map1);
 }
 

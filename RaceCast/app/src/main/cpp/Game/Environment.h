@@ -151,8 +151,8 @@ void Environment<N, M>::RenderMinimap(float playerX, float playerY)
 
     // 3. Anchoring to Top-Left (-1, 1)
     float padding = 0.05f;
-    float starting_point_x = -1.0f + (boxSize_x / 2.0f) + padding * 2.f;
-    float starting_point_y =  1.0f - (boxSize_y / 2.0f) - padding * 2.f;
+    float starting_point_x = -1.0f + (boxSize_x / 2.0f) + padding;
+    float starting_point_y =  1.0f - (boxSize_y / 2.0f) - padding;
 
     // 4. Render Only Wall Tiles (Black)
     for (unsigned int n = 0; n < N; n++) {

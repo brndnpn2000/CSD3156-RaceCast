@@ -21,13 +21,11 @@ public:
         return instance;
     }
 
-    void PrintOutCheckpointStats() {
-        LOGI(" === CHECKPOINTS === ");
-        LOGI(" Checkpoint Count : %d", (int) checkpoint_list.size());
-        int i = 0;
+    void EndGame()
+    {
         for (auto &checkpoint: checkpoint_list)
         {
-            LOGI("Checkpoint %d Lap: %d", i++, checkpoint.second);
+            checkpoint.second = 100;
         }
     }
 
@@ -172,7 +170,7 @@ private:
 
 
     int laps = 0;
-    int max_laps = 3;
+    int max_laps = 1;
     std::vector<std::pair<Checkpoint, int>> checkpoint_list;
 };
 

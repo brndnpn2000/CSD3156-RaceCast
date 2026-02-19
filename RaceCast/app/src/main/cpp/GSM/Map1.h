@@ -8,6 +8,7 @@
 #include "Globals.h"
 #include "GameObject.h"
 #include "CheckpointManager.h"
+#include "MenuState.h"
 
 class Map1 : public GameState
 {
@@ -21,16 +22,21 @@ public:
 
 private:
     float aspect_ratio = 0.f; // x / y;
-    UI_QUAD debug_toggle;
 
     // TIMERS
     float start_light_timer;
     UI_QUAD start_light;
     float race_timer;
+    float end_timer;
 
     // INPUT
     UI_QUAD accelerator;
     UI_QUAD reverse;
+
+    // END SCREEN MENU
+    UI_QUAD end_screen_bg;
+    UI_QUAD back_to_menu_button;
+    UI_QUAD retry_button;
 
     // LAP COUNTER
     float font_height;
@@ -46,9 +52,6 @@ private:
     TextureCoordinate total_lap_tc;
     TextureCoordinate current_lap_tc;
     TextureCoordinate slash_tc;
-
-
-    bool render_debug = false;
 
     // OBJECTS;
     UI_QUAD background;
