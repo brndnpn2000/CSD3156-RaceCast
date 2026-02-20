@@ -7,8 +7,10 @@ void MenuState::Init()
     AssetManager::GetInstance().LoadTexture("image/play_button.png");
 
     AUDIO.LoadAudio("audio/bgm.mp3");
-    AUDIO.PlayAudio("audio/bgm.mp3");
-    AUDIO.UpdateAudioVolume("audio/bgm.mp3", 1.0f);
+    AUDIO.LoadAudio("audio/ui_sfx.mp3");
+
+    AUDIO.PlayLoopingAudio("audio/bgm.mp3");
+    AUDIO.UpdateAudioVolume("audio/bgm.mp3", 0.1f);
 
     // Init of UI
     background = UI_QUAD(0,0,2,2,"mainmenu_bg.png");
@@ -31,6 +33,8 @@ void MenuState::Update(float dt)
     else if (background.Touched())
     {
         PlayExitAnimation = true;
+        AUDIO.PlayAudio("audio/ui_sfx.mp3");
+        AUDIO.UpdateAudioVolume("audio/ui_sfx.mp3", 0.2f);
     }
 }
 

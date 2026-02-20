@@ -18,6 +18,7 @@ struct AudioBuffer {
     SLObjectItf playerObject = nullptr;
     SLPlayItf playerPlay = nullptr;
     SLVolumeItf playerVolume = nullptr;
+    SLSeekItf playerSeek = nullptr; // Added for looping
     SLAndroidSimpleBufferQueueItf bufferQueue = nullptr;
 
     // Default constructor for map compatibility
@@ -43,9 +44,20 @@ public:
     static AudioManager& GetInstance();
 
     void Init();
+    // load audio from path, eg. "audio/bgm.mp3"
     void LoadAudio(const char* path);
 
+    // play audio from where it left off
     void PlayAudio(const char* soundName);
+
+    // play looping audio, eg. bgm
+    void PlayLoopingAudio(const char* soundName);
+
+    // pause audio
+    void StopAudio(const char* name);
+
+    // reset back to 0.00, but not working i think
+    void ResetAudio(const char* name);
 
     void UpdateAudioVolume(const char* soundName, float volume);
 
