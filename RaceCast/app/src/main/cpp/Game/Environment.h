@@ -30,16 +30,9 @@ public:
 
 
 
-    bool isWall(unsigned int x, unsigned int y)
-    {
-        return (map[y][x] == 1) ? true : false;
-    }
+    bool isWall(unsigned int x, unsigned int y);
 
-    bool isACheckpoint(unsigned int x, unsigned int y)
-    {
-        return (map[y][x] == 11) ? true : false;
-    }
-
+    bool isACheckpoint(unsigned int x, unsigned int y);
 
 
 private:
@@ -50,5 +43,7 @@ private:
     void assign_from_list(std::initializer_list<unsigned int> list);
 
 };
+
+#include "Environment.tpp"
 
 #endif //RACECAST_ENVIRONMENT_H
