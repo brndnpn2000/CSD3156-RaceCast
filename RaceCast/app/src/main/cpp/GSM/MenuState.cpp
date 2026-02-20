@@ -6,6 +6,10 @@ void MenuState::Init()
     AssetManager::GetInstance().LoadTexture("image/RaceCast.png");
     AssetManager::GetInstance().LoadTexture("image/play_button.png");
 
+    AUDIO.LoadAudio("audio/bgm.mp3");
+    AUDIO.PlayAudio("audio/bgm.mp3");
+    AUDIO.UpdateAudioVolume("audio/bgm.mp3", 1.0f);
+
     // Init of UI
     background = UI_QUAD(0,0,2,2,"mainmenu_bg.png");
     racecast_logo = UI_QUAD(0.f,1.4f,1,0.5,"RaceCast.png");

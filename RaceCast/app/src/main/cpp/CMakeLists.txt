@@ -19,6 +19,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         Graphics/BatchRenderer.cpp
         Graphics/ShaderManager.cpp
         Utilities/AssetManager.cpp
+        Utilities/AudioManager.cpp
         Utilities/InputManager.cpp
         Utilities/UIHelper.cpp
         Utilities/Globals.cpp
@@ -43,11 +44,16 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 find_library(gles3-lib GLESv3)
 find_library(log-lib log)
 find_library(android-lib android)
+find_library(sles-lib OpenSLES) # Add this line
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
         ${gles3-lib}
         ${log-lib}
-        ${android-lib})
+        ${android-lib}
+        ${sles-lib}           # Link the OpenSLES library variable [cite: 19, 23]
+        atomic                # Good practice for C++17 atomics in NDK
+        m                     # Links the math library
+)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this

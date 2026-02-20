@@ -10,6 +10,7 @@
 #include "GameStateManager.h"
 #include "MenuState.h"
 #include "ShaderManager.h"
+#include "AudioManager.h"
 #include "InputManager.h"
 #include "Timer.h"
 #include "Globals.h"
@@ -28,11 +29,12 @@ extern "C" {
     {
         AAssetManager** ptr = AssetManager::GetInstance().GetContext();
         *ptr = AAssetManager_fromJava(env, assetManager);
-
         if (ptr)
             LOGI("[ASSET_MANAGER] Initialized");
         else
             LOGE("[ASSET_MANAGER] Failed to Initialize");
+
+        AUDIO.Init();
     }
 
     JNIEXPORT void JNICALL

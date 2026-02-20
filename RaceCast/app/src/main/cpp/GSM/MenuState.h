@@ -7,6 +7,7 @@
 #include "UIHelper.h"
 #include "InputManager.h"
 #include "SelectionState.h"
+#include "AudioManager.h"
 
 class MenuState : public GameState
 {
