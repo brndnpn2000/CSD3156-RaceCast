@@ -1,4 +1,5 @@
 #include "Map1.h"
+#include "HighScore.h"
 
 void Map1::Init()
 {
@@ -10,8 +11,9 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
-
+    LOGI("MAP1 Start");
     start_light_timer = 0.f;
+    final_time = 0.f;
     race_timer = 0.f;
     end_timer = 0.f;
     aspect_ratio = (float)Globals::screen_size.first / (float)Globals::screen_size.second;
@@ -82,17 +84,30 @@ void Map1::Update(float dt)
     }
     else if (CheckpointManager::GetInstance().isEnded() && end_timer > 1.0f) // game over
     {
-
         if (retry_button.Touched())
+        {
+            //HighScore::saveScoreInMap(mapNumber, race_timer);
             Reset();
+        }
+
 
         if (back_to_menu_button.Touched())
+        {
+            //HighScore::saveScoreInMap(mapNumber, race_timer);
             GSM.ChangeState(new MenuState);
+        }
+
     }
     else // game running
     {
+
         if (CheckpointManager::GetInstance().isEnded())
         {
+            if (!score_saved) {
+                final_time = race_timer;
+                score_saved = true;
+                HighScore::saveScoreInMap(mapNumber, final_time);
+            }
             end_timer += dt;
         }
         else
@@ -119,7 +134,7 @@ void Map1::Update(float dt)
     }
 
     // update rendering objects
-        // current lap counter
+    // current lap counter
     current_lap_int = CheckpointManager::GetInstance().GetLapCount();
     current_lap_tc.GetBL()[0] = tc_offset * (float)current_lap_int;
     current_lap_tc.GetTL()[0] = current_lap_tc.GetBL()[0];
@@ -127,7 +142,7 @@ void Map1::Update(float dt)
     current_lap_tc.GetTR()[0] = current_lap_tc.GetBR()[0];
     current_lap = UI_QUAD(0.545,0.61,font_height,font_width,"numbering.png", current_lap_tc);
 
-        // background
+    // background
     TextureCoordinate moving_bg_tc;
     float center = player.rotation / 360.f;
     moving_bg_tc.GetBL()[0] = center - 0.125f;
