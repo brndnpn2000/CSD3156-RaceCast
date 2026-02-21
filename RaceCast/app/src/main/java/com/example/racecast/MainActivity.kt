@@ -18,11 +18,35 @@ import android.hardware.SensorManager
 // --- FIX 1: Add the Interface here ---
 class MainActivity : AppCompatActivity(), SensorEventListener {
 
+    external fun nativeSetLeaderboard(mapIndex: Int, json: String)
+    external fun nativeGetLeaderboard(mapIndex: Int): String
+
     private external fun nativeInitAssetManager(assetManager: AssetManager)
     private lateinit var gLView: MyGLSurfaceView
 
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
+
+    private val prefs by lazy { getSharedPreferences("racecast_prefs", MODE_PRIVATE) }
+
+    private fun loadLeaderboards() {
+        for (map in 0..2) {
+            val key = "lb_map_$map"
+            if (prefs.contains(key)) {
+                val json = prefs.getString(key, "[]") ?: "[]"
+                nativeSetLeaderboard(map, json)
+            }
+        }
+    }
+
+    private fun saveLeaderboards() {
+        val editor = prefs.edit()
+        for (map in 0..2) {
+            val json = nativeGetLeaderboard(map)
+            editor.putString("lb_map_$map", json)
+        }
+        editor.apply()
+    }
 
     private fun hideSystemUI() {
         val windowInsetsController = WindowInsetsControllerCompat(window, window.decorView)
@@ -45,6 +69,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         hideSystemUI()
 
         nativeInitAssetManager(assets)
+        loadLeaderboards()
 
         gLView = MyGLSurfaceView(this).apply {
             setEGLContextClientVersion(3)
@@ -69,6 +94,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onPause() {
+        saveLeaderboards()
         super.onPause() // Only call this once
         gLView.onPause()
         sensorManager.unregisterListener(this)

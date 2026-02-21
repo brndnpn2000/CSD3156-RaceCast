@@ -28,6 +28,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         Game/Environment.cpp
         Game/Environment.tpp
         Game/CheckpointManager.cpp
+        Game/HighScore.cpp
 )
 
 # *IMPORTANT* How CMake find .h files

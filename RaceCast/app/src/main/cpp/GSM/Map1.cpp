@@ -1,5 +1,6 @@
 #include "Map1.h"
 
+
 void Map1::Init()
 {
     AssetManager::GetInstance().LoadTexture("image/pedals.png");
@@ -10,6 +11,7 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
+    LOGI("MAP1 Start");
 
     start_light_timer = 0.f;
     race_timer = 0.f;
@@ -82,6 +84,8 @@ void Map1::Update(float dt)
     }
     else if (CheckpointManager::GetInstance().isEnded() && end_timer > 1.0f) // game over
     {
+        //save score
+
 
         if (retry_button.Touched())
             Reset();
@@ -119,7 +123,7 @@ void Map1::Update(float dt)
     }
 
     // update rendering objects
-        // current lap counter
+    // current lap counter
     current_lap_int = CheckpointManager::GetInstance().GetLapCount();
     current_lap_tc.GetBL()[0] = tc_offset * (float)current_lap_int;
     current_lap_tc.GetTL()[0] = current_lap_tc.GetBL()[0];
@@ -127,7 +131,7 @@ void Map1::Update(float dt)
     current_lap_tc.GetTR()[0] = current_lap_tc.GetBR()[0];
     current_lap = UI_QUAD(0.545,0.61,font_height,font_width,"numbering.png", current_lap_tc);
 
-        // background
+    // background
     TextureCoordinate moving_bg_tc;
     float center = player.rotation / 360.f;
     moving_bg_tc.GetBL()[0] = center - 0.125f;
