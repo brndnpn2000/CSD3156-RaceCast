@@ -28,6 +28,7 @@ public:
     static std::vector<float>& getMapScoreList(int mapNumber);
     static std::string SerializeScoreList(const std::vector<float>& v);
     static std::vector<float> DeserializeScoreList(const std::string& s);
+    static void saveScoreInMap(int mapNum, float score);
 
     static std::array<std::vector<float>, 3> mapScores;
 private:

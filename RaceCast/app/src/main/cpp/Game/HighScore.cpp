@@ -2,6 +2,8 @@
 // Created by AQIL on 2/20/2026.
 //
 
+#include <algorithm>
+
 #include "HighScore.h"
 
 std::array<std::vector<float>, 3> HighScore::mapScores = {
@@ -10,6 +12,16 @@ std::array<std::vector<float>, 3> HighScore::mapScores = {
     std::vector<float>{}
 };
 std::vector<float> HighScore::invalid = {0.0f};
+
+void HighScore::saveScoreInMap(int mapNum, float score) {
+    std::vector<float>& currMapScoreList = getMapScoreList(mapNum);
+    currMapScoreList.push_back(score);
+
+    std::sort(currMapScoreList.begin(), currMapScoreList.end());
+
+    if (currMapScoreList.size() > 5) currMapScoreList.resize(5);
+    LOGI("Score Saved: %f", score);
+}
 
 std::vector<float>& HighScore::getMapScoreList(int mapNumber)
 {
@@ -20,7 +32,7 @@ std::vector<float>& HighScore::getMapScoreList(int mapNumber)
         return invalid;
     }
 
-    LOGI(" -> returning mapScores[%d], size=%zu", mapNumber, mapScores[(size_t)mapNumber].size());
+    LOGI(" -> returning mapScores[%d], size=%zu", mapNumber - 1, mapScores[(size_t)mapNumber - 1].size());
     return mapScores[(size_t)mapNumber - 1];
 }
 

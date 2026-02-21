@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     private val prefs by lazy { getSharedPreferences("racecast_prefs", MODE_PRIVATE) }
 
     private fun loadLeaderboards() {
-        for (map in 0..2) {
+        for (map in 1..3) {
             val key = "lb_map_$map"
             if (prefs.contains(key)) {
                 val json = prefs.getString(key, "[]") ?: "[]"
@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     private fun saveLeaderboards() {
         val editor = prefs.edit()
-        for (map in 0..2) {
+        for (map in 1..3) {
             val json = nativeGetLeaderboard(map)
             editor.putString("lb_map_$map", json)
         }

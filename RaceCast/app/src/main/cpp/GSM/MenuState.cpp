@@ -12,6 +12,11 @@ void MenuState::Init()
     racecast_logo = UI_QUAD(0.f,1.4f,1,0.5,"RaceCast.png");
     play_button = UI_QUAD(0.f,-1.5f,0.8f,0.3f,"play_button.png");
 
+    //HighScore::mapScores[0].clear();
+    for(float &x: HighScore::getMapScoreList(1)){
+        LOGI("Score: %f", x);
+    }
+
 }
 
 void MenuState::Update(float dt)

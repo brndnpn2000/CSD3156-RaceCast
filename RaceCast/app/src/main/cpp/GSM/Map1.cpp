@@ -1,5 +1,5 @@
 #include "Map1.h"
-
+#include "HighScore.h"
 
 void Map1::Init()
 {
@@ -12,8 +12,8 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
     LOGI("MAP1 Start");
-
     start_light_timer = 0.f;
+    final_time = 0.f;
     race_timer = 0.f;
     end_timer = 0.f;
     aspect_ratio = (float)Globals::screen_size.first / (float)Globals::screen_size.second;
@@ -84,19 +84,30 @@ void Map1::Update(float dt)
     }
     else if (CheckpointManager::GetInstance().isEnded() && end_timer > 1.0f) // game over
     {
-        //save score
-
-
         if (retry_button.Touched())
+        {
+            //HighScore::saveScoreInMap(mapNumber, race_timer);
             Reset();
+        }
+
 
         if (back_to_menu_button.Touched())
+        {
+            //HighScore::saveScoreInMap(mapNumber, race_timer);
             GSM.ChangeState(new MenuState);
+        }
+
     }
     else // game running
     {
+
         if (CheckpointManager::GetInstance().isEnded())
         {
+            if (!score_saved) {
+                final_time = race_timer;
+                score_saved = true;
+                HighScore::saveScoreInMap(mapNumber, final_time);
+            }
             end_timer += dt;
         }
         else

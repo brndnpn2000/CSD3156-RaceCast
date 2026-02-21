@@ -23,9 +23,16 @@ public:
 private:
     float aspect_ratio = 0.f; // x / y;
 
+    //MAP NUMBER
+    int mapNumber = 1;
+
+    //SCORE
+    bool score_saved = false;
+
     // TIMERS
     float start_light_timer;
     UI_QUAD start_light;
+    float final_time;
     float race_timer;
     float end_timer;
     int race_minutes;
