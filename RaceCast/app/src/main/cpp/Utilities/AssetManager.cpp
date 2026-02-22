@@ -66,3 +66,23 @@ GLuint AssetManager::GetTexture(const char* path)
     return 0;
 }
 
+void AssetManager::LoadFont(const std::string& name, const std::string& path)
+{
+    auto font = std::make_shared<FontAsset>();
+    bool success = font->Load(*GetContext(), path);
+    if (success) {
+        m_font_map[name] = font;
+        LOGI("[ASSET_MANAGER] Loaded Font: %s as '%s'", path.c_str(), name.c_str());
+    } else {
+        LOGE("[ASSET_MANAGER] Failed to load font: %s", path.c_str());
+    }
+}
+
+FontAsset* AssetManager::GetFont(const std::string& name)
+{
+    auto it = m_font_map.find(name);
+    if (it != m_font_map.end())
+        return it->second.get();
+    return nullptr;
+}
+

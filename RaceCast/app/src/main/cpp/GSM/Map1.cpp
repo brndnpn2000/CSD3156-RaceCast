@@ -1,4 +1,5 @@
 #include "Map1.h"
+#include "HighScore.h"
 
 void Map1::Init()
 {
@@ -10,14 +11,12 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
-    AUDIO.LoadAudio("audio/countdown.wav");
-    AUDIO.LoadAudio("audio/gameMusic.mp3");
-    AUDIO.LoadAudio("audio/accelerate.wav");
+    AssetManager::GetInstance().LoadFont("main", "fonts/font.otf"); // ADD
 
-    AUDIO.PlayLoopingAudio("audio/gameMusic.mp3");
-    AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.25f);
 
+    LOGI("MAP1 Start");
     start_light_timer = 0.f;
+    final_time = 0.f;
     race_timer = 0.f;
     end_timer = 0.f;
     aspect_ratio = (float)Globals::screen_size.first / (float)Globals::screen_size.second;
@@ -76,27 +75,6 @@ void Map1::Update(float dt)
 {
     // start timer
     start_light_timer += dt;
-
-    if (!countdown_started && start_light_timer >= 0.0f)
-    {
-        AUDIO.PlayAudio("audio/countdown.wav");
-        AUDIO.UpdateAudioVolume("audio/countdown.wav", 0.6f);
-        countdown_started = true; // Ensures this block never runs again
-    }
-
-    if (accelerator.Hold())
-    {
-        LOGI("Accelerator is being touched!");
-        // Play the engine sound if it's not already playing
-        AUDIO.PlayLoopingAudio("audio/accelerate.wav");
-        AUDIO.UpdateAudioVolume("audio/accelerate.wav", 1.0f);
-    }
-    else
-    {
-        // Stop the sound when the player lets go
-        AUDIO.StopAudio("audio/accelerate.wav");
-    }
-
     if (start_light_timer < 3.1f) // game starting
     {
         TextureCoordinate start_tc;
@@ -106,21 +84,33 @@ void Map1::Update(float dt)
         start_tc.GetBL()[1] = 1.f - (((float)(int)start_light_timer + 1.f) * offset);
         start_tc.GetBR()[1] = start_tc.GetBL()[1];
         start_light = UI_QUAD(0.f,0.5f,0.7f,0.55f,"starting_light.png", start_tc);
-
     }
     else if (CheckpointManager::GetInstance().isEnded() && end_timer > 1.0f) // game over
     {
-
         if (retry_button.Touched())
+        {
+            //HighScore::saveScoreInMap(mapNumber, race_timer);
             Reset();
+        }
+
 
         if (back_to_menu_button.Touched())
+        {
+            //HighScore::saveScoreInMap(mapNumber, race_timer);
             GSM.ChangeState(new MenuState);
+        }
+
     }
     else // game running
     {
+
         if (CheckpointManager::GetInstance().isEnded())
         {
+            if (!score_saved) {
+                final_time = race_timer;
+                score_saved = true;
+                HighScore::saveScoreInMap(mapNumber, final_time);
+            }
             end_timer += dt;
         }
         else
@@ -147,7 +137,7 @@ void Map1::Update(float dt)
     }
 
     // update rendering objects
-        // current lap counter
+    // current lap counter
     current_lap_int = CheckpointManager::GetInstance().GetLapCount();
     current_lap_tc.GetBL()[0] = tc_offset * (float)current_lap_int;
     current_lap_tc.GetTL()[0] = current_lap_tc.GetBL()[0];
@@ -155,7 +145,7 @@ void Map1::Update(float dt)
     current_lap_tc.GetTR()[0] = current_lap_tc.GetBR()[0];
     current_lap = UI_QUAD(0.545,0.61,font_height,font_width,"numbering.png", current_lap_tc);
 
-        // background
+    // background
     TextureCoordinate moving_bg_tc;
     float center = player.rotation / 360.f;
     moving_bg_tc.GetBL()[0] = center - 0.125f;
@@ -186,6 +176,15 @@ void Map1::RenderUI()
 
         // render "traffic light"
         if (start_light_timer < 4.0f) start_light.DrawUI();
+        FontAsset* font = AssetManager::GetInstance().GetFont("main");
+        if (font)
+        {
+            char timeStr[16];
+            snprintf(timeStr, sizeof(timeStr), "%d:%02d", race_minutes, race_seconds);
+BatchRenderer::GetInstance().RenderText("HELLO", -0.8f, 0.0f, 0.3f, *font);
+    //BatchRenderer::GetInstance().RenderText("HELLO", 0.f, 0.f, 10.f, *font);
+
+        }
     }
     else // end screen comes out
     {
@@ -197,8 +196,6 @@ void Map1::RenderUI()
 
 void Map1::Exit()
 {
-    AUDIO.StopAudio("audio/gameMusic.mp3");
-    AUDIO.StopAudio("audio/accelerate.wav");
 
 }
 

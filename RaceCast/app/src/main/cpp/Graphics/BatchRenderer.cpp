@@ -244,3 +244,40 @@ void BatchRenderer::DrawQuad(float x, float y, float w, float h, GLuint textureI
     m_vertices.push_back(v[0]); m_vertices.push_back(v[1]); m_vertices.push_back(v[2]);
     m_vertices.push_back(v[0]); m_vertices.push_back(v[2]); m_vertices.push_back(v[3]);
 }
+
+void BatchRenderer::LoadFont(const std::string& name, AAssetManager* mgr, const std::string& assetPath)
+{
+    // Convenience wrapper — caller owns the FontAsset, this just loads it
+    // Usage: manage FontAsset lifetime in your game state
+}
+
+void BatchRenderer::RenderText(const std::string& text, float x, float y, float fontSize,
+                                FontAsset& font, float cr, float cg, float cb, float ca)
+//                                                        ^^ rename r,g,b,a to cr,cg,cb,ca
+{
+    float scale = fontSize / 128.f;
+    float cursorX = x;
+
+    for (char c : text)
+    {
+        auto it = font.m_glyphs.find(c);
+        if (it == font.m_glyphs.end()) continue;
+        const Glyph& glyph = it->second;  // rename g to glyph
+
+        float w = glyph.width  * scale * 100.f;
+        float h = glyph.height * scale * 100.f;
+
+        float qx = cursorX + (glyph.bearingX * scale * 100.f) + w * 0.5f;
+        float qy = y + (glyph.bearingY * scale * 100.f) - h * 0.5f;
+
+        TextureCoordinate tc;
+        for (int i = 0; i < 4; i++) {
+            tc.uv[i][0] = glyph.uv[i][0];
+            tc.uv[i][1] = glyph.uv[i][1];
+        }
+
+        DrawQuad(qx, qy, w, h, font.m_textureID, tc, cr, cg, cb, ca);
+
+        cursorX += glyph.advanceX * scale * 100.f;
+    }
+}

@@ -14,6 +14,7 @@
 #include "InputManager.h"
 #include "Timer.h"
 #include "Globals.h"
+#include "HighScore.h"
 
 #define LOG_TAG "RaceCast-Native"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -86,4 +87,26 @@ Java_com_example_racecast_MyGLSurfaceView_nativeOnTouch(JNIEnv *env, jobject thi
         // Update your global variable or player steering here
         g_DeviceTilt = tilt;
     }
+
+    JNIEXPORT void JNICALL
+    Java_com_example_racecast_MainActivity_nativeSetLeaderboard(
+            JNIEnv* env, jobject /*thiz*/, jint mapIndex, jstring jsonStr
+    ) {
+        const char* cstr = env->GetStringUTFChars(jsonStr, nullptr);
+        std::string s(cstr ? cstr : "");
+        env->ReleaseStringUTFChars(jsonStr, cstr);
+
+        auto vec = HighScore::DeserializeScoreList(s);
+        auto& list = HighScore::getMapScoreList((int)mapIndex);
+        list = std::move(vec);
+    }
+    JNIEXPORT jstring JNICALL
+    Java_com_example_racecast_MainActivity_nativeGetLeaderboard(
+            JNIEnv* env, jobject /*thiz*/, jint mapIndex
+    ) {
+        auto& list = HighScore::getMapScoreList((int)mapIndex);
+        std::string s = HighScore::SerializeScoreList(list);
+        return env->NewStringUTF(s.c_str());
+    }
+
 }
