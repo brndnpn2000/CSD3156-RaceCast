@@ -60,6 +60,7 @@ private:
     Environment<10,10> environment;
     PlayerObject player;
 
+    bool countdown_started = false;
 };
 
 

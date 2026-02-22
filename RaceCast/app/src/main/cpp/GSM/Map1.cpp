@@ -10,6 +10,7 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
+    AUDIO.LoadAudio("audio/countdown.wav");
 
     start_light_timer = 0.f;
     race_timer = 0.f;
@@ -70,6 +71,14 @@ void Map1::Update(float dt)
 {
     // start timer
     start_light_timer += dt;
+
+    if (!countdown_started && start_light_timer >= 0.0f)
+    {
+        AUDIO.PlayAudio("audio/countdown.wav");
+        AUDIO.UpdateAudioVolume("audio/countdown.wav", 0.6f);
+        countdown_started = true; // Ensures this block never runs again
+    }
+
     if (start_light_timer < 3.1f) // game starting
     {
         TextureCoordinate start_tc;
@@ -79,6 +88,7 @@ void Map1::Update(float dt)
         start_tc.GetBL()[1] = 1.f - (((float)(int)start_light_timer + 1.f) * offset);
         start_tc.GetBR()[1] = start_tc.GetBL()[1];
         start_light = UI_QUAD(0.f,0.5f,0.7f,0.55f,"starting_light.png", start_tc);
+
     }
     else if (CheckpointManager::GetInstance().isEnded() && end_timer > 1.0f) // game over
     {
