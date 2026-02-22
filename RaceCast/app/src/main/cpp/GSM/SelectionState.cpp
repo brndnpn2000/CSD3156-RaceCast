@@ -10,7 +10,9 @@ void SelectionState::Init()
 
     AUDIO.LoadAudio("audio/bgm.mp3");
     AUDIO.LoadAudio("audio/ui_sfx.mp3");
+
     AUDIO.LoadAudio("audio/touchMap.mp3");
+    AUDIO.UpdateAudioVolume("audio/touchMap.mp3", 0.5f);
 
     AUDIO.StopAudio("audio/bgm.mp3");
 
