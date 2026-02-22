@@ -11,6 +11,9 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
+    AssetManager::GetInstance().LoadFont("main", "fonts/font.otf"); // ADD
+
+
     LOGI("MAP1 Start");
     start_light_timer = 0.f;
     final_time = 0.f;
@@ -173,6 +176,15 @@ void Map1::RenderUI()
 
         // render "traffic light"
         if (start_light_timer < 4.0f) start_light.DrawUI();
+        FontAsset* font = AssetManager::GetInstance().GetFont("main");
+        if (font)
+        {
+            char timeStr[16];
+            snprintf(timeStr, sizeof(timeStr), "%d:%02d", race_minutes, race_seconds);
+BatchRenderer::GetInstance().RenderText("HELLO", -0.8f, 0.0f, 0.3f, *font);
+    //BatchRenderer::GetInstance().RenderText("HELLO", 0.f, 0.f, 10.f, *font);
+
+        }
     }
     else // end screen comes out
     {

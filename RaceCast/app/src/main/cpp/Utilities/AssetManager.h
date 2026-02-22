@@ -7,6 +7,7 @@
 #include "stb_image.h"
 #include <string>
 #include <map>
+#include "FontAsset.h"
 
 #include <android/log.h>
 #define LOG_TAG "RaceCast-Native"
@@ -26,9 +27,18 @@ public:
     GLuint GetTexture(const char* path);
     void CleanAll();
 
+
+    //fonts
+    void LoadFont(const std::string& name, const std::string& path);
+    FontAsset* GetFont(const std::string& name);
+
 private:
     AAssetManager* m_AssetManager;
     std::map<std::string, GLuint> m_texture_map;
+
+
+    //fonts
+    std::map<std::string, std::shared_ptr<FontAsset>> m_font_map;   // ADD
 
 };
 

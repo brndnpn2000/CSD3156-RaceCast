@@ -4,6 +4,9 @@
 #include <GLES3/gl31.h>
 #include <vector>
 #include "ShaderManager.h"
+#include "FontAsset.h"
+#include <android/asset_manager.h>
+#include <string>
 
 #define MAX_TRIANGLE 100
 #define VERTICES_PER_TRIANGLE 3
@@ -49,6 +52,12 @@ public:
     void DrawQuad(float x, float y, float w, float h, GLuint textureID, TextureCoordinate tc = TextureCoordinate());
     void DrawQuad(float x, float y, float w, float h, GLuint textureID,
                                  TextureCoordinate tc, float r, float g, float b, float a);
+
+    void LoadFont(const std::string& name, AAssetManager* mgr, const std::string& assetPath);
+    void RenderText(const std::string& text, float x, float y, float fontSize,
+        FontAsset& font,
+        float cr = 1.f, float cg = 1.f, float cb = 1.f, float ca = 1.f);
+
 
 private:
     GLuint VAO, VBO;

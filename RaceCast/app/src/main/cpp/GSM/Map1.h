@@ -9,6 +9,8 @@
 #include "GameObject.h"
 #include "CheckpointManager.h"
 #include "MenuState.h"
+#include "FontAsset.h"   // ADD
+
 
 class Map1 : public GameState
 {
