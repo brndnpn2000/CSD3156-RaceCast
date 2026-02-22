@@ -1,11 +1,13 @@
 #include "MenuState.h"
 #include "HighScore.h"
+#include "FontAsset.h"
 
 void MenuState::Init()
 {
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
     AssetManager::GetInstance().LoadTexture("image/RaceCast.png");
     AssetManager::GetInstance().LoadTexture("image/play_button.png");
+
 
     AUDIO.LoadAudio("audio/bgm.mp3");
     AUDIO.LoadAudio("audio/ui_sfx.mp3");
@@ -57,6 +59,7 @@ void MenuState::RenderUI()
     background.DrawUI();
     racecast_logo.DrawUI();
     if (blink) play_button.DrawUI();
+
 }
 
 void MenuState::Exit()

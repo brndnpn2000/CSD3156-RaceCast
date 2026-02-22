@@ -6,12 +6,37 @@
 
 #include "HighScore.h"
 
+FontAsset* HighScore::highScoreFont;
+
 std::array<std::vector<float>, 3> HighScore::mapScores = {
     std::vector<float>{},
     std::vector<float>{},
     std::vector<float>{}
 };
 std::vector<float> HighScore::invalid = {0.0f};
+
+void HighScore::displayHighScores(int& mapNumber, float& final_time)
+{
+    BatchRenderer::GetInstance().RenderText("HIGHSCORES",-0.35f,0.8f, 0.1f, *HighScore::highScoreFont);
+    std::vector<float>& currMapScoreList = HighScore::getMapScoreList(mapNumber);
+    float y_start = 0.6f;
+    for(size_t i = 0;i<currMapScoreList.size();++i)
+    {
+        float currScoreFloat = currMapScoreList[i];
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(1) << currScoreFloat;
+        std::string scoreStr = oss.str();
+        std::string displayScore = std::to_string(i+1) + ". " + scoreStr;
+        BatchRenderer::GetInstance().RenderText(displayScore,-0.35f,y_start, 0.1f, *HighScore::highScoreFont);
+        y_start -= 0.2f;
+    }
+
+    BatchRenderer::GetInstance().RenderText("Your Score:",-0.35f,y_start-0.2f, 0.1f, *HighScore::highScoreFont);
+    std::ostringstream oss2;
+    oss2 << std::fixed << std::setprecision(1) << final_time;
+    std::string finalScoreStr = oss2.str();
+    BatchRenderer::GetInstance().RenderText(finalScoreStr,-0.35f,y_start-0.4f, 0.1f, *HighScore::highScoreFont);
+}
 
 void HighScore::saveScoreInMap(int mapNum, float score) {
     std::vector<float>& currMapScoreList = getMapScoreList(mapNum);
@@ -25,14 +50,14 @@ void HighScore::saveScoreInMap(int mapNum, float score) {
 
 std::vector<float>& HighScore::getMapScoreList(int mapNumber)
 {
-    LOGI("getMapScoreList(mapNumber=%d)", mapNumber);
+    //LOGI("getMapScoreList(mapNumber=%d)", mapNumber);
 
     if (mapNumber < 1 || mapNumber > 3) {
-        LOGI(" -> returning invalid");
+        //LOGI(" -> returning invalid");
         return invalid;
     }
 
-    LOGI(" -> returning mapScores[%d], size=%zu", mapNumber - 1, mapScores[(size_t)mapNumber - 1].size());
+    //LOGI(" -> returning mapScores[%d], size=%zu", mapNumber - 1, mapScores[(size_t)mapNumber - 1].size());
     return mapScores[(size_t)mapNumber - 1];
 }
 

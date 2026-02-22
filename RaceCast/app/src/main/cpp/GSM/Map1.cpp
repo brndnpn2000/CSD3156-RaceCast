@@ -1,3 +1,6 @@
+#include <sstream>
+#include <iomanip>
+
 #include "Map1.h"
 #include "HighScore.h"
 
@@ -19,6 +22,7 @@ void Map1::Init()
 
     AUDIO.PlayLoopingAudio("audio/gameMusic.mp3");
     AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.25f);
+    HighScore::highScoreFont = AssetManager::GetInstance().GetFont("main");
 
     LOGI("MAP1 Start");
     start_light_timer = 0.f;
@@ -208,8 +212,8 @@ void Map1::RenderUI()
         {
             char timeStr[16];
             snprintf(timeStr, sizeof(timeStr), "%d:%02d", race_minutes, race_seconds);
-BatchRenderer::GetInstance().RenderText("HELLO", -0.8f, 0.0f, 0.3f, *font);
-    //BatchRenderer::GetInstance().RenderText("HELLO", 0.f, 0.f, 10.f, *font);
+            BatchRenderer::GetInstance().RenderText("HELLO", -0.8f, 0.0f, 0.3f, *font);
+            //BatchRenderer::GetInstance().RenderText("HELLO", 0.f, 0.f, 10.f, *font);
 
         }
     }
@@ -218,6 +222,12 @@ BatchRenderer::GetInstance().RenderText("HELLO", -0.8f, 0.0f, 0.3f, *font);
         end_screen_bg.DrawUI();
         retry_button.DrawUI();
         back_to_menu_button.DrawUI();
+
+        //test highScore Font
+        if(HighScore::highScoreFont)
+        {
+            HighScore::displayHighScores(mapNumber, final_time);
+        }
     }
 }
 

@@ -18,21 +18,19 @@
 #include "GameObject.h"
 #include "CheckpointManager.h"
 #include "MenuState.h"
+#include "FontAsset.h"
 
 class HighScore {
 public:
-    float getHighScore() const { return m_Score; }
-
-    void setHighScore(float value) { m_Score = value; }
-
     static std::vector<float>& getMapScoreList(int mapNumber);
     static std::string SerializeScoreList(const std::vector<float>& v);
     static std::vector<float> DeserializeScoreList(const std::string& s);
     static void saveScoreInMap(int mapNum, float score);
+    static void displayHighScores(int& mapNumber, float& final_time);
 
+    static FontAsset* highScoreFont;
     static std::array<std::vector<float>, 3> mapScores;
 private:
-    float m_Score = 0;
     static std::vector<float> invalid;
 };
 
