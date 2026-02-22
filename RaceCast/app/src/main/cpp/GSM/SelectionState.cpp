@@ -58,11 +58,14 @@ void SelectionState::Update(float dt)
 
     if (back_button.Touched())
     {
+        AUDIO.PlayAudio("audio/ui_sfx.mp3");
         GameStateManager::GetInstance().ChangeState(new MenuState);
     }
 
     if (play_button.Touched())
     {
+        AUDIO.PlayAudio("audio/ui_sfx.mp3");
+        AUDIO.UpdateAudioVolume("audio/ui_sfx.mp3", 0.2f);
         switch (selected_map)
         {
             case 0 :
