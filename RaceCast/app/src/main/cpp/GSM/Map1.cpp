@@ -12,6 +12,8 @@ void Map1::Init()
 
     AUDIO.LoadAudio("audio/countdown.wav");
     AUDIO.LoadAudio("audio/gameMusic.mp3");
+    AUDIO.LoadAudio("audio/accelerate.wav");
+
     AUDIO.PlayLoopingAudio("audio/gameMusic.mp3");
     AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.25f);
 
@@ -80,6 +82,19 @@ void Map1::Update(float dt)
         AUDIO.PlayAudio("audio/countdown.wav");
         AUDIO.UpdateAudioVolume("audio/countdown.wav", 0.6f);
         countdown_started = true; // Ensures this block never runs again
+    }
+
+    if (accelerator.Hold())
+    {
+        LOGI("Accelerator is being touched!");
+        // Play the engine sound if it's not already playing
+        AUDIO.PlayLoopingAudio("audio/accelerate.wav");
+        AUDIO.UpdateAudioVolume("audio/accelerate.wav", 1.0f);
+    }
+    else
+    {
+        // Stop the sound when the player lets go
+        AUDIO.StopAudio("audio/accelerate.wav");
     }
 
     if (start_light_timer < 3.1f) // game starting
@@ -183,6 +198,7 @@ void Map1::RenderUI()
 void Map1::Exit()
 {
     AUDIO.StopAudio("audio/gameMusic.mp3");
+    AUDIO.StopAudio("audio/accelerate.wav");
 
 }
 
