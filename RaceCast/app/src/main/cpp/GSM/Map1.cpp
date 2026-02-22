@@ -11,6 +11,9 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
     AUDIO.LoadAudio("audio/countdown.wav");
+    AUDIO.LoadAudio("audio/gameMusic.mp3");
+    AUDIO.PlayLoopingAudio("audio/gameMusic.mp3");
+    AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.25f);
 
     start_light_timer = 0.f;
     race_timer = 0.f;
@@ -179,6 +182,7 @@ void Map1::RenderUI()
 
 void Map1::Exit()
 {
+    AUDIO.StopAudio("audio/gameMusic.mp3");
 
 }
 
