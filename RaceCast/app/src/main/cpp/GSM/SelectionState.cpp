@@ -10,6 +10,7 @@ void SelectionState::Init()
 
     AUDIO.LoadAudio("audio/bgm.mp3");
     AUDIO.LoadAudio("audio/ui_sfx.mp3");
+    AUDIO.LoadAudio("audio/touchMap.mp3");
 
     AUDIO.StopAudio("audio/bgm.mp3");
 
@@ -41,17 +42,20 @@ void SelectionState::Update(float dt)
 
     if (map1.Touched())
     {
+        AUDIO.PlayAudio("audio/touchMap.mp3");
         selected_map = 0;
         select_frame.GetPosition() = map1.GetPosition();
     }
 
     else if (map2.Touched())
     {
+        AUDIO.PlayAudio("audio/touchMap.mp3");
         selected_map = 1;
         select_frame.GetPosition() = map2.GetPosition();
     }
     else if (map3.Touched())
     {
+        AUDIO.PlayAudio("audio/touchMap.mp3");
         selected_map = 2;
         select_frame.GetPosition() = map3.GetPosition();
     }
