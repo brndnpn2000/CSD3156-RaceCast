@@ -8,6 +8,8 @@
 #include "UIHelper.h"
 #include "Globals.h"
 #include "Map1.h"
+#include "Map2.h"
+#include "Map3.h"
 
 class SelectionState : public GameState
 {

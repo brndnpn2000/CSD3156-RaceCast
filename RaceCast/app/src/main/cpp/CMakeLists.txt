@@ -17,6 +17,8 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         GSM/SelectionState.cpp
         GSM/PlayState.cpp
         GSM/Map1.cpp
+        GSM/Map2.cpp
+        GSM/Map3.cpp
         GSM/GameStateManager.cpp
         Graphics/RayCaster.cpp
         Graphics/BatchRenderer.cpp
