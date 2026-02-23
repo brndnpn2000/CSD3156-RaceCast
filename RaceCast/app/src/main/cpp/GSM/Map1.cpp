@@ -9,7 +9,6 @@ void Map1::Init()
     AssetManager::GetInstance().LoadTexture("image/pedals.png");
     AssetManager::GetInstance().LoadTexture("image/end_screen_buttons.png");
     AssetManager::GetInstance().LoadTexture("image/map1_bg.png");
-    AssetManager::GetInstance().LoadTexture("image/night_bg.png");
     AssetManager::GetInstance().LoadTexture("image/fender.png");
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
@@ -170,7 +169,7 @@ void Map1::Update(float dt)
     moving_bg_tc.GetTL()[0] = moving_bg_tc.GetBL()[0];
     moving_bg_tc.GetBR()[0] = center + 0.125f;
     moving_bg_tc.GetTR()[0] = moving_bg_tc.GetBR()[0];
-    background = UI_QUAD(0.f,0.5f,2.f,1.f,"night_bg.png",moving_bg_tc);
+    background = UI_QUAD(0.f,0.5f,2.f,1.f,"map1_bg.png",moving_bg_tc);
 }
 
 void Map1::RenderGame()
