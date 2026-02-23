@@ -64,7 +64,7 @@ void MenuState::RenderUI()
 
 void MenuState::Exit()
 {
-    AssetManager::GetInstance().CleanAll();
+
 }
 
 void MenuState::EntryAnimation(float dt)

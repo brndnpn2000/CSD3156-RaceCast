@@ -15,6 +15,7 @@ public:
 
     void Render();
 
+    GameState* GetCurrentState();
 private:
     GameState* current_state = nullptr;
     GameState* next_state = nullptr;

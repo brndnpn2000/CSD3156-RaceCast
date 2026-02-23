@@ -26,7 +26,7 @@ public:
     void LoadTexture(const char* path);
     GLuint GetTexture(const char* path);
     void CleanAll();
-
+    void Reset();
 
     //fonts
     void LoadFont(const std::string& name, const std::string& path);

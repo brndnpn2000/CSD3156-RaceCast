@@ -14,6 +14,8 @@
 class ShaderManager
 {
 public:
+    void Reset();
+
     static ShaderManager& GetInstance(); // Singleton
     std::string LoadShaderSource(const char* path);
     GLuint CreateProgram(const char* shaderName);

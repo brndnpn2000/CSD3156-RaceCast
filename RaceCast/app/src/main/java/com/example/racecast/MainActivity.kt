@@ -1,5 +1,6 @@
 package com.example.racecast
 
+import android.view.Surface
 import android.os.Bundle
 import android.content.res.AssetManager
 import android.opengl.GLSurfaceView
@@ -80,12 +81,22 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 
     // --- FIX 2: Implement the required methods for the Sensor ---
-    override fun onSensorChanged(event: SensorEvent?) {
-        event?.let {
-            if (it.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                // values[1] is Y-axis (Tilt for steering in landscape)
-                setNativeTilt(it.values[1])
+    override fun onSensorChanged(event: SensorEvent) {
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            val display = windowManager.defaultDisplay
+            val rotation = display.rotation
+
+            var tilt = 0f
+
+            // Adjust which axis we use based on the current screen rotation
+            when (rotation) {
+                Surface.ROTATION_0 -> tilt = -event.values[0]       // Portrait
+                Surface.ROTATION_90 -> tilt = event.values[1]     // Landscape Left
+                Surface.ROTATION_180 -> tilt = event.values[0]    // Reverse Portrait
+                Surface.ROTATION_270 -> tilt = -event.values[1]      // Landscape Right
             }
+
+            setNativeTilt(tilt)
         }
     }
 
@@ -95,6 +106,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onPause() {
         saveLeaderboards()
+        nativeOnPause()
         super.onPause() // Only call this once
         gLView.onPause()
         sensorManager.unregisterListener(this)
@@ -102,6 +114,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
+        nativeOnResume()
         accelerometer?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
         }
@@ -109,6 +122,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
     }
 
     external fun setNativeTilt(tilt: Float)
+    external fun nativeOnPause()
+    external fun nativeOnResume()
 
     companion object {
         init {

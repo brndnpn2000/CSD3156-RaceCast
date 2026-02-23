@@ -61,6 +61,12 @@ public:
 
     void UpdateAudioVolume(const char* soundName, float volume);
 
+    void PauseAll();
+
+    void ResumeAll();
+
+    void StopAll();
+
     void Shutdown();
 private:
     AudioManager() = default;
@@ -71,6 +77,7 @@ private:
     SLObjectItf m_OutputMixObject = nullptr;
 
     std::map<std::string, AudioBuffer> m_AudioMap;
+
 };
 
 #define AUDIO AudioManager::GetInstance()

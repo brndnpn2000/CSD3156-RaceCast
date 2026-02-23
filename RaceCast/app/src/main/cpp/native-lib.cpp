@@ -25,6 +25,20 @@ float g_ScreenHeight = 1.0f;
 float g_DeviceTilt = 0.0f;
 extern "C" {
 
+JNIEXPORT void JNICALL
+Java_com_example_racecast_MainActivity_nativeOnPause(JNIEnv* env, jobject thiz) {
+    LOGI("[LIFECYCLE] nativeOnPause called - Pausing Audio");
+    // Call the AudioManager function we created earlier to silence the engine
+    AUDIO.PauseAll();
+}
+
+JNIEXPORT void JNICALL
+Java_com_example_racecast_MainActivity_nativeOnResume(JNIEnv* env, jobject thiz) {
+    LOGI("[LIFECYCLE] nativeOnResume called - Resuming Audio");
+    // Resume the BGM or specific tracks
+    AUDIO.ResumeAll();
+}
+
     JNIEXPORT void JNICALL
     Java_com_example_racecast_MainActivity_nativeInitAssetManager(JNIEnv* env, jobject thiz, jobject assetManager)
     {
@@ -38,14 +52,25 @@ extern "C" {
         AUDIO.Init();
     }
 
-    JNIEXPORT void JNICALL
-    Java_com_example_racecast_MyRenderer_nativeInit(JNIEnv *env, jobject thiz)
-    {
-        BatchRenderer::GetInstance().Init();
-        LOGI("Initializing OpenGL ES 3.1 Context");
+JNIEXPORT void JNICALL
+Java_com_example_racecast_MyRenderer_nativeInit(JNIEnv *env, jobject thiz)
+{
+    LOGI("[LIFECYCLE] nativeInit: Restoring OpenGL Context");
+    ShaderManager::GetInstance().Reset();
+    AssetManager::GetInstance().Reset();
+    // 1. Re-initialize the BatchRenderer (Generates new VAO/VBO handles)
+    BatchRenderer::GetInstance().Init();
+
+    // 3. Asset Recovery: Re-upload textures for the current state
+    if (GSM.GetCurrentState() != nullptr) {
+        LOGI("[LIFECYCLE] Reloading assets for active state");
+        // Re-run Init on the current state to re-upload its textures/buffers
+        GSM.GetCurrentState()->Init();
+    } else {
+        // First time opening the app
         GSM.ChangeState(new MenuState());
-        //GSM.ChangeState(new Map1());
     }
+}
 
     JNIEXPORT void JNICALL
     Java_com_example_racecast_MyRenderer_nativeChanged(JNIEnv *env, jobject thiz, jint width, jint height)

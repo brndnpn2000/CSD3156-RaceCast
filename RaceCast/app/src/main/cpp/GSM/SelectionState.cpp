@@ -17,7 +17,6 @@ void SelectionState::Init()
     AUDIO.LoadAudio("audio/touchMap.mp3");
     AUDIO.UpdateAudioVolume("audio/touchMap.mp3", 0.5f);
 
-    AUDIO.StopAudio("audio/bgm.mp3");
 
     background = UI_QUAD(0,0,2,2,"mainmenu_bg.png");
     text = UI_QUAD(0,1.5,1,0.5,"play_button.png");

@@ -20,9 +20,18 @@ BatchRenderer& BatchRenderer::GetInstance()
 
 void BatchRenderer::Init()
 {
-// 1. Setup Shader
+    // --- ONLY ADDED FOR CONTEXT RECOVERY ---
+    // Resetting these to 0 prevents the engine from using invalid
+    // IDs from the previous destroyed session.
+    VAO = 0;
+    VBO = 0;
+    m_pinkTexture = 0;
+    // ---------------------------------------
+
+    // 1. Setup Shader
     mProgram = ShaderManager::GetInstance().CreateProgram("BatchRenderer");
     LOGI("[BatchRenderer] Initialised(?) Shader BatchRenderer");
+
     // 2. Create Fallback Pink Texture (1x1 Magenta pixel)
     uint32_t pink = 0xFFFF00FF; // ABGR format
     glGenTextures(1, &m_pinkTexture);
@@ -64,17 +73,15 @@ void BatchRenderer::Init()
     glUseProgram(mProgram);
     GLint samplers[8] = {0, 1, 2, 3, 4, 5, 6, 7};
     auto loc = glGetUniformLocation(mProgram, "uTextures");
-    glUniform1iv(loc, 8, samplers); // Maps shader array to GL_TEXTURE0...GL_TEXTURE7
+    if (loc != -1) glUniform1iv(loc, 8, samplers);
 
     m_texture_slots.clear();
-    m_texture_slots.push_back(m_pinkTexture); // Slot 0 is now valid
+    m_texture_slots.push_back(m_pinkTexture);
 
     glEnable(GL_BLEND);
-    // Standard transparency formula:
-    // Result = (NewColor * NewAlpha) + (OldColor * (1 - NewAlpha))
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    LOGI("[BatchRenderer] Initialised BatchRenderer Instance");
+    LOGI("[BatchRenderer] Initialised BatchRenderer Instance (VAO: %d)", VAO);
 }
 
 void BatchRenderer::BeginBatch()

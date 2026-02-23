@@ -169,9 +169,10 @@ void AudioManager::StopAudio(const char* name) {
     auto it = m_AudioMap.find(name);
     if (it == m_AudioMap.end() || it->second.playerPlay == nullptr) return;
 
-    // Pausing keeps the playback position (Head) where it is
-    (*it->second.playerPlay)->SetPlayState(it->second.playerPlay, SL_PLAYSTATE_PAUSED);
-    LOGI("[AUDIO_MANAGER] Paused: %s", name);
+    // CHANGE: Use SL_PLAYSTATE_STOPPED instead of SL_PLAYSTATE_PAUSED
+    (*it->second.playerPlay)->SetPlayState(it->second.playerPlay, SL_PLAYSTATE_STOPPED);
+
+    LOGI("[AUDIO_MANAGER] Stopped: %s", name);
 }
 
 void AudioManager::ResetAudio(const char* name) {
@@ -218,4 +219,47 @@ void AudioManager::Shutdown() {
     }
 }
 
+void AudioManager::PauseAll() {
+    // Iterate through every loaded sound in your map
+    for (auto& pair : m_AudioMap) {
+        AudioBuffer& buffer = pair.second;
 
+        // Check if the player exists and is currently playing
+        if (buffer.playerPlay != nullptr) {
+            SLuint32 currentState;
+            (*buffer.playerPlay)->GetPlayState(buffer.playerPlay, &currentState);
+
+            if (currentState == SL_PLAYSTATE_PLAYING) {
+                // Set to PAUSED so it remembers the playback position
+                (*buffer.playerPlay)->SetPlayState(buffer.playerPlay, SL_PLAYSTATE_PAUSED);
+            }
+        }
+    }
+    LOGI("[AUDIO_MANAGER] All audio paused.");
+}
+
+void AudioManager::ResumeAll() {
+    for (auto& pair : m_AudioMap) {
+        AudioBuffer& buffer = pair.second;
+
+        if (buffer.playerPlay != nullptr) {
+            SLuint32 currentState;
+            (*buffer.playerPlay)->GetPlayState(buffer.playerPlay, &currentState);
+
+            // Only resume sounds that were previously paused
+            if (currentState == SL_PLAYSTATE_PAUSED) {
+                (*buffer.playerPlay)->SetPlayState(buffer.playerPlay, SL_PLAYSTATE_PLAYING);
+            }
+        }
+    }
+    LOGI("[AUDIO_MANAGER] All audio resumed.");
+}
+
+void AudioManager::StopAll() {
+    for (auto& pair : m_AudioMap) {
+        if (pair.second.playerPlay != nullptr) {
+            (*pair.second.playerPlay)->SetPlayState(pair.second.playerPlay, SL_PLAYSTATE_STOPPED);
+        }
+    }
+    LOGI("[AUDIO_MANAGER] All audio stopped for state transition.");
+}

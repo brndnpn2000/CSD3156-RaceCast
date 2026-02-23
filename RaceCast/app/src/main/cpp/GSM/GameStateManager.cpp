@@ -46,3 +46,7 @@ GameStateManager &GameStateManager::GetInstance() {
     static GameStateManager instance;
     return instance;
 }
+
+GameState *GameStateManager::GetCurrentState() {
+    return current_state;
+}

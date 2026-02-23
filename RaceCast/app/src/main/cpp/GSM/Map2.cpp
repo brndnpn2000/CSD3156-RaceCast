@@ -10,6 +10,7 @@
 
 void Map2::Init()
 {
+    AUDIO.StopAudio("audio/bgm.mp3");
     AssetManager::GetInstance().LoadTexture("image/pedals.png");
     AssetManager::GetInstance().LoadTexture("image/end_screen_buttons.png");
     AssetManager::GetInstance().LoadTexture("image/map2_bg.png");
@@ -23,6 +24,7 @@ void Map2::Init()
     AUDIO.LoadAudio("audio/gameMusic.mp3");
     AUDIO.LoadAudio("audio/accelerate.wav");
 
+    AUDIO.StopAudio("audio/gameMusic.mp3");
     AUDIO.PlayLoopingAudio("audio/gameMusic.mp3");
     AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.1f);
     HighScore::highScoreFont = AssetManager::GetInstance().GetFont("font");
@@ -36,31 +38,32 @@ void Map2::Init()
 
     environment.DebugAssetInit();
     environment = {
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 0
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 1
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 2
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 3
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 4
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 5
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 6
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 7
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 8
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 9
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 00
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 00
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 02
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 03
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 04
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 05
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 06
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 07
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 08
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  // Row 09
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // Row 0
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 1
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 2
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 3
+            1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, // Row 4
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 5
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 6
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 7
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 8
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, // Row 9
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 00
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 00
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 02
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 03
+            1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, // Row 04
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 05
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 06
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 07
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 08
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1  // Row 09
     };
     CheckpointManager::GetInstance().Init<20, 20>(environment);
 
-    player.position = Vector2D(5.5,1.5);
+    player.position = Vector2D(5.5,2.5);
     player.size = Vector2D(0.7,0.45);
+    player.rotation = 0.f;
 
     TextureCoordinate acc, rev;
     acc.GetBR()[0] = 0.5;
@@ -77,10 +80,10 @@ void Map2::Init()
     TextureCoordinate retry, menu;
     retry.GetBL()[1] = 0.5f;
     retry.GetBR()[1] = retry.GetBL()[1];
-    retry_button = UI_QUAD(0.6,-0.5,0.3,0.3,"end_screen_buttons.png", retry);
+    retry_button = UI_QUAD(0.6,-0.5,0.3,0.4,"end_screen_buttons.png", retry);
     menu.GetTL()[1] = 0.5f;
     menu.GetTR()[1] = menu.GetTL()[1];
-    back_to_menu_button = UI_QUAD(-0.6,-0.5,0.3,0.3,"end_screen_buttons.png", menu);
+    back_to_menu_button = UI_QUAD(-0.6,-0.5,0.4,0.3,"end_screen_buttons.png", menu);
 }
 
 void Map2::Update(float dt)
@@ -135,7 +138,7 @@ void Map2::Update(float dt)
         else
         {
             // Stop the sound when the player lets go
-            AUDIO.StopAudio("audio/accelerate.wav");
+            AUDIO.UpdateAudioVolume("audio/accelerate.wav", 0.0f);
         }
 
 

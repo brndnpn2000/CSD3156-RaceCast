@@ -86,3 +86,9 @@ FontAsset* AssetManager::GetFont(const std::string& name)
     return nullptr;
 }
 
+void AssetManager::Reset() {
+    // We clear the map so that LoadTexture() doesn't see a "cached" ID
+    // and skip the glGenTextures/glTexImage2D calls.
+    m_texture_map.clear();
+    LOGI("[ASSET_MANAGER] Texture cache cleared for context recovery.");
+}

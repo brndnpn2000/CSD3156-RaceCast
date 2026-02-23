@@ -8,9 +8,9 @@ ShaderManager& ShaderManager::GetInstance()
 }
 
 std::string ShaderManager::LoadShaderSource(const char* path) {
-    AAssetManager ** AssetMgr = AssetManager::GetInstance().GetContext();
+    AAssetManager** AssetMgr = AssetManager::GetInstance().GetContext();
 
-    if (!*AssetMgr) {
+    if (!AssetMgr || !*AssetMgr) {
         LOGE("AssetManager not initialized!");
         return "";
     }
@@ -22,12 +22,13 @@ std::string ShaderManager::LoadShaderSource(const char* path) {
     }
 
     off_t length = AAsset_getLength(asset);
-    std::vector<char> buffer(length + 1);
+    // Use a vector to safely manage memory
+    std::vector<char> buffer(length);
     AAsset_read(asset, buffer.data(), length);
-    buffer[length] = '\0';
-
     AAsset_close(asset);
-    return std::string(buffer.data());
+
+    // Construct string directly from buffer data and length
+    return std::string(buffer.data(), length);
 }
 
 GLuint ShaderManager::CreateProgram(const char* shaderName) {
@@ -36,17 +37,21 @@ GLuint ShaderManager::CreateProgram(const char* shaderName) {
         return m_shaderMap[shaderName];
     }
 
-    // 2. Construct file paths (Assuming shaders are in "shaders/" folder)
+    // 2. Load Source
     std::string vertPath = "shaders/" + std::string(shaderName) + ".vert";
     std::string fragPath = "shaders/" + std::string(shaderName) + ".frag";
 
     std::string vSrc = LoadShaderSource(vertPath.c_str());
     std::string fSrc = LoadShaderSource(fragPath.c_str());
 
+    if (vSrc.empty() || fSrc.empty()) {
+        LOGE("Failed to load shader source for: %s", shaderName);
+        return 0;
+    }
+
     const char* vCode = vSrc.c_str();
     const char* fCode = fSrc.c_str();
 
-    // Lambda for compiling stages
     auto compileShader = [](GLenum type, const char* source) {
         GLuint shader = glCreateShader(type);
         glShaderSource(shader, 1, &source, nullptr);
@@ -57,7 +62,7 @@ GLuint ShaderManager::CreateProgram(const char* shaderName) {
         if (!success) {
             char infoLog[512];
             glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-            LOGE("Shader Compilation Error: %s", infoLog);
+            LOGE("Shader Compilation Error (%d): %s", type, infoLog);
         }
         return shader;
     };
@@ -77,28 +82,30 @@ GLuint ShaderManager::CreateProgram(const char* shaderName) {
         char infoLog[512];
         glGetProgramInfoLog(program, 512, nullptr, infoLog);
         LOGE("Program Linking Error: %s", infoLog);
+        glDeleteProgram(program); // Clean up failed program
+        return 0;
     }
 
-    // Clean up temporary shader objects
     glDeleteShader(vertex);
     glDeleteShader(fragment);
 
-    // Store in map and return
     m_shaderMap[shaderName] = program;
-    LOGE("[SHADER] Loaded: %s", shaderName);
+    LOGI("[SHADER] Successfully Created/Recovered: %s (ID: %d)", shaderName, program);
     return program;
 }
 
 GLuint ShaderManager::GetShader(std::string shaderName) {
-// Look for the shader in the map
     auto it = m_shaderMap.find(shaderName);
-
     if (it != m_shaderMap.end()) {
-        // Return the GLuint (program ID) stored in the map
         return it->second;
     }
-
-    // Shader not found; return 0 (standard OpenGL error handle)
-    __android_log_print(ANDROID_LOG_WARN, "ShaderManager", "Shader '%s' not found in map!", shaderName.c_str());
+    LOGE("Shader '%s' not found in map!", shaderName.c_str());
     return 0;
+}
+
+void ShaderManager::Reset() {
+    // IMPORTANT: Clear IDs without glDeleteProgram because the context
+    // is already destroyed. Deleting invalid IDs can cause crashes.
+    m_shaderMap.clear();
+    LOGI("[SHADER_MANAGER] Internal map cleared for Context Recovery.");
 }

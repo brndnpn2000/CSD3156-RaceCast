@@ -49,7 +49,7 @@ public:
         if (steering < -MAX_STEER) steering = -MAX_STEER;
 
 
-        float accel = 5.0f;
+        float accel = 8.0f;
         if (accelerate) {
             speed += accel * dt;
         } else if (reverse) {

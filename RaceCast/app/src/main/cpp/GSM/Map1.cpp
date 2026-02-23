@@ -6,6 +6,7 @@
 
 void Map1::Init()
 {
+    AUDIO.StopAudio("audio/bgm.mp3");
     AssetManager::GetInstance().LoadTexture("image/pedals.png");
     AssetManager::GetInstance().LoadTexture("image/end_screen_buttons.png");
     AssetManager::GetInstance().LoadTexture("image/map1_bg.png");
@@ -19,6 +20,7 @@ void Map1::Init()
     AUDIO.LoadAudio("audio/gameMusic.mp3");
     AUDIO.LoadAudio("audio/accelerate.wav");
 
+    AUDIO.StopAudio("audio/gameMusic.mp3");
     AUDIO.PlayLoopingAudio("audio/gameMusic.mp3");
     AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.1f);
     HighScore::highScoreFont = AssetManager::GetInstance().GetFont("font");
@@ -31,23 +33,33 @@ void Map1::Init()
     aspect_ratio = (float)Globals::screen_size.first / (float)Globals::screen_size.second;
 
     environment.DebugAssetInit();
-    environment =
-            {
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // Row 0 (Top Wall)
-                    1, 0, 0, 0, 11, 0, 0, 0, 0, 1, // Row 1
-                    1, 0, 0, 0, 11, 0, 0, 0, 0, 1, // Row 2
-                    1, 0, 0, 1, 1, 1, 1, 0, 0, 1, // Row 3
-                    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // Row 4
-                    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // Row 5
-                    1, 0, 0, 1, 1, 1, 1, 0, 0, 1, // Row 6
-                    1, 0, 0, 0, 11, 0, 0, 0, 0, 1, // Row 7
-                    1, 0, 0, 0, 11, 0, 0, 0, 0, 1, // Row 8
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1  // Row 9 (Bottom Wall)
-            };
-    CheckpointManager::GetInstance().Init<10,10>(environment);
+    environment = {
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, // Row 0
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, // Row 1
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, // Row 2
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, // Row 3
+            1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, // Row 4
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, // Row 5
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, // Row 6
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, // Row 7
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, // Row 8
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, // Row 9
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 00
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 00
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 02
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, // Row 03
+            1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, // Row 04
+            1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, // Row 05
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 06
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 07
+            1, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, // Row 08
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1  // Row 09
+    };
+    CheckpointManager::GetInstance().Init<20,20>(environment);
 
-    player.position = Vector2D(5.5,1.5);
+    player.position = Vector2D(5.5,2.5);
     player.size = Vector2D(0.7,0.45);
+    player.rotation = 0.f;
 
     TextureCoordinate acc, rev;
     acc.GetBR()[0] = 0.5;
@@ -64,10 +76,10 @@ void Map1::Init()
     TextureCoordinate retry, menu;
     retry.GetBL()[1] = 0.5f;
     retry.GetBR()[1] = retry.GetBL()[1];
-    retry_button = UI_QUAD(0.6,-0.5,0.3,0.3,"end_screen_buttons.png", retry);
+    retry_button = UI_QUAD(0.6,-0.5,0.3,0.4,"end_screen_buttons.png", retry);
     menu.GetTL()[1] = 0.5f;
     menu.GetTR()[1] = menu.GetTL()[1];
-    back_to_menu_button = UI_QUAD(-0.6,-0.5,0.3,0.3,"end_screen_buttons.png", menu);
+    back_to_menu_button = UI_QUAD(-0.6,-0.5,0.3,0.4,"end_screen_buttons.png", menu);
 }
 
 void Map1::Update(float dt)
@@ -122,7 +134,7 @@ void Map1::Update(float dt)
         else
         {
             // Stop the sound when the player lets go
-            AUDIO.StopAudio("audio/accelerate.wav");
+            AUDIO.UpdateAudioVolume("audio/accelerate.wav", 0.0f);
         }
 
 
@@ -151,7 +163,7 @@ void Map1::Update(float dt)
         player.onUpdate(dt, forward, backward);
 
         // collision
-        player.CollisionPhysics<10, 10>(environment, dt);
+        player.CollisionPhysics<20,20>(environment, dt);
         player.SpeedRecalculate();
         if (environment.isACheckpoint(player.position.x, player.position.y))
         {
@@ -176,7 +188,7 @@ void Map1::Update(float dt)
 void Map1::RenderGame()
 {
     background.DrawUI();
-    player.RenderRayCast<10,10>(environment);
+    player.RenderRayCast<20,20>(environment);
 
 }
 
