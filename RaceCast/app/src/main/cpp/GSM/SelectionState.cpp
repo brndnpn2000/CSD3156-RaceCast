@@ -84,12 +84,12 @@ void SelectionState::Update(float dt)
                 break;
             case 1 :
                 {
-                    //GameStateManager::GetInstance().ChangeState(new Map2);
+                    GameStateManager::GetInstance().ChangeState(new Map2);
                 }
                 break;
             case 2 :
                 {
-                    //GameStateManager::GetInstance().ChangeState(new Map3);
+                    GameStateManager::GetInstance().ChangeState(new Map3);
                 }
                 break;
         }
