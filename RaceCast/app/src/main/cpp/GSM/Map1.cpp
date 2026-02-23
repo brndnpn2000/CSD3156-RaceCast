@@ -7,22 +7,22 @@
 void Map1::Init()
 {
     AssetManager::GetInstance().LoadTexture("image/pedals.png");
-    AssetManager::GetInstance().LoadTexture("image/numbering.png");
+    AssetManager::GetInstance().LoadTexture("image/end_screen_buttons.png");
     AssetManager::GetInstance().LoadTexture("image/map1_bg.png");
     AssetManager::GetInstance().LoadTexture("image/night_bg.png");
     AssetManager::GetInstance().LoadTexture("image/fender.png");
     AssetManager::GetInstance().LoadTexture("image/starting_light.png");
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
 
-    AssetManager::GetInstance().LoadFont("main", "fonts/font.otf"); // ADD
+    AssetManager::GetInstance().LoadFont("font", "fonts/font.otf"); // ADD
 
     AUDIO.LoadAudio("audio/countdown.wav");
     AUDIO.LoadAudio("audio/gameMusic.mp3");
     AUDIO.LoadAudio("audio/accelerate.wav");
 
     AUDIO.PlayLoopingAudio("audio/gameMusic.mp3");
-    AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.25f);
-    HighScore::highScoreFont = AssetManager::GetInstance().GetFont("main");
+    AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.1f);
+    HighScore::highScoreFont = AssetManager::GetInstance().GetFont("font");
 
     LOGI("MAP1 Start");
     start_light_timer = 0.f;
@@ -60,25 +60,15 @@ void Map1::Init()
     accelerator =   UI_QUAD(0.65,-0.5,0.3,0.6,"pedals.png",acc);
     reverse =       UI_QUAD(-0.65,-0.5,0.4,0.5,"pedals.png",rev);
 
-    // lap counter
-    font_height = 0.1f;
-    font_width = font_height * aspect_ratio;
-
-    total_lap_tc.GetBL()[0] = tc_offset * total_lap_int;
-    total_lap_tc.GetTL()[0] = total_lap_tc.GetBL()[0];
-    total_lap_tc.GetBR()[0] = tc_offset * (total_lap_int + 1);
-    total_lap_tc.GetTR()[0] = total_lap_tc.GetBR()[0];
-    total_lap = UI_QUAD(0.655,0.42,font_height,font_width,"numbering.png", total_lap_tc);
-
-    slash_tc.GetBL()[0] = tc_offset * 11.f;
-    slash_tc.GetTL()[0] = slash_tc.GetBL()[0];
-    slash = UI_QUAD(0.6,0.5,font_height * 1.2f,font_width * 1.2f,"numbering.png", slash_tc);
-
-
     // End Screen
     end_screen_bg = UI_QUAD(0.f,0.f,2.f,2.f,"mainmenu_bg.png");
-    retry_button = UI_QUAD(0.6,-0.5,font_height * 1.2f,font_width * 1.2f,"numbering.png", slash_tc);
-    back_to_menu_button = UI_QUAD(-0.6,-0.5,font_height * 1.2f,font_width * 1.2f,"numbering.png", slash_tc);
+    TextureCoordinate retry, menu;
+    retry.GetBL()[1] = 0.5f;
+    retry.GetBR()[1] = retry.GetBL()[1];
+    retry_button = UI_QUAD(0.6,-0.5,0.3,0.3,"end_screen_buttons.png", retry);
+    menu.GetTL()[1] = 0.5f;
+    menu.GetTR()[1] = menu.GetTL()[1];
+    back_to_menu_button = UI_QUAD(-0.6,-0.5,0.3,0.3,"end_screen_buttons.png", menu);
 }
 
 void Map1::Update(float dt)
@@ -93,18 +83,7 @@ void Map1::Update(float dt)
         countdown_started = true; // Ensures this block never runs again
     }
 
-    if (accelerator.Hold())
-    {
-        LOGI("Accelerator is being touched!");
-        // Play the engine sound if it's not already playing
-        AUDIO.PlayLoopingAudio("audio/accelerate.wav");
-        AUDIO.UpdateAudioVolume("audio/accelerate.wav", 1.0f);
-    }
-    else
-    {
-        // Stop the sound when the player lets go
-        AUDIO.StopAudio("audio/accelerate.wav");
-    }
+
 
     if (start_light_timer < 3.1f) // game starting
     {
@@ -134,6 +113,19 @@ void Map1::Update(float dt)
     }
     else // game running
     {
+        AUDIO.UpdateAudioVolume("audio/gameMusic.mp3", 0.15f);
+
+        if (accelerator.Hold())
+        {
+            AUDIO.PlayLoopingAudio("audio/accelerate.wav");
+            AUDIO.UpdateAudioVolume("audio/accelerate.wav", 2.0f);
+        }
+        else
+        {
+            // Stop the sound when the player lets go
+            AUDIO.StopAudio("audio/accelerate.wav");
+        }
+
 
         if (CheckpointManager::GetInstance().isEnded())
         {
@@ -170,11 +162,6 @@ void Map1::Update(float dt)
     // update rendering objects
     // current lap counter
     current_lap_int = CheckpointManager::GetInstance().GetLapCount();
-    current_lap_tc.GetBL()[0] = tc_offset * (float)current_lap_int;
-    current_lap_tc.GetTL()[0] = current_lap_tc.GetBL()[0];
-    current_lap_tc.GetBR()[0] = tc_offset * (float)(current_lap_int + 1);
-    current_lap_tc.GetTR()[0] = current_lap_tc.GetBR()[0];
-    current_lap = UI_QUAD(0.545,0.61,font_height,font_width,"numbering.png", current_lap_tc);
 
     // background
     TextureCoordinate moving_bg_tc;
@@ -201,20 +188,15 @@ void Map1::RenderUI()
 
         accelerator.DrawUI();
         reverse.DrawUI();
-        current_lap.DrawUI();
-        slash.DrawUI();
-        total_lap.DrawUI();
 
         // render "traffic light"
         if (start_light_timer < 4.0f) start_light.DrawUI();
-        FontAsset* font = AssetManager::GetInstance().GetFont("main");
+        FontAsset* font = AssetManager::GetInstance().GetFont("font");
         if (font)
         {
-            char timeStr[16];
-            snprintf(timeStr, sizeof(timeStr), "%d:%02d", race_minutes, race_seconds);
-            BatchRenderer::GetInstance().RenderText("HELLO", -0.8f, 0.0f, 0.3f, *font);
-            //BatchRenderer::GetInstance().RenderText("HELLO", 0.f, 0.f, 10.f, *font);
-
+            std::string lap_text;
+            lap_text += std::to_string((current_lap_int + 1) > 3 ? 3 : (current_lap_int + 1)) + " / " + std::to_string(total_lap_int);
+            BatchRenderer::GetInstance().RenderText(lap_text, 0.4f, 0.7f, 0.2f, *font);
         }
     }
     else // end screen comes out

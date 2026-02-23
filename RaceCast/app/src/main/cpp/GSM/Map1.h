@@ -53,16 +53,9 @@ private:
     float font_height;
     float font_width;
 
-    UI_QUAD current_lap;
     int current_lap_int = 1;
-    UI_QUAD total_lap;
     int total_lap_int = 3;
-    UI_QUAD slash;
 
-    float tc_offset = 1.f / 12.f;
-    TextureCoordinate total_lap_tc;
-    TextureCoordinate current_lap_tc;
-    TextureCoordinate slash_tc;
 
     // OBJECTS;
     UI_QUAD background;

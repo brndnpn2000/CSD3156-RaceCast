@@ -31,12 +31,12 @@ public:
 
     int GetLapCount()
     {
-        int lowest = 100000;
+        int highest = 0;
         for (auto &checkpoint: checkpoint_list) {
-            if (checkpoint.second < lowest)
-                lowest = checkpoint.second;
+            if (checkpoint.second > highest)
+                highest = checkpoint.second;
         }
-        return lowest;
+        return highest;
     }
 
 
@@ -170,7 +170,7 @@ private:
 
 
     int laps = 0;
-    int max_laps = 1;
+    int max_laps = 3;
     std::vector<std::pair<Checkpoint, int>> checkpoint_list;
 };
 
