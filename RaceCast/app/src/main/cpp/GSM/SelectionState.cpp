@@ -5,6 +5,7 @@ void SelectionState::Init()
     AssetManager::GetInstance().LoadTexture("image/mainmenu_bg.png");
     AssetManager::GetInstance().LoadTexture("image/play_button.png");
     AssetManager::GetInstance().LoadTexture("image/selected_frame.png");
+    AssetManager::GetInstance().LoadTexture("image/map2_icon.png");
     AssetManager::GetInstance().LoadTexture("image/play.png");
     AssetManager::GetInstance().LoadTexture("image/back.png");
 
@@ -24,7 +25,7 @@ void SelectionState::Init()
     float box_size = 0.4f;
 
     map1 = UI_QUAD(-0.5,0,box_size,box_size * aspect_ratio,"");
-    map2 = UI_QUAD(0,0,box_size,box_size * aspect_ratio,"");
+    map2 = UI_QUAD(0,0,box_size,box_size * aspect_ratio,"map2_icon.png");
     map3 = UI_QUAD(0.5,0,box_size,box_size * aspect_ratio,"");
 
     float frame_size = box_size + 0.05f;
