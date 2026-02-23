@@ -29,6 +29,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         Utilities/UIHelper.cpp
         Utilities/Globals.cpp
         Utilities/Timer.cpp
+        Utilities/Logger.cpp
         External/stb_impl.cpp
         Game/GameObject.cpp
         Game/Environment.cpp

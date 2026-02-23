@@ -7,7 +7,7 @@ extern float g_ScreenHeight;
 
 BatchRenderer::BatchRenderer()
         : VAO(0), VBO(0), m_pinkTexture(0), mProgram(0),
-          m_max_vertices(MAX_TRIANGLE * 3 * 2) // 100 quads = 600 vertices
+          m_max_vertices(MAX_TRIANGLE * VERTICES_PER_TRIANGLE * 2) // 100 quads = 600 vertices
 {
 }
 

@@ -15,28 +15,25 @@
 #include "Timer.h"
 #include "Globals.h"
 #include "HighScore.h"
-
-#define LOG_TAG "RaceCast-Native"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#include "Logger.h"
 
 float g_ScreenWidth = 1.0f;
 float g_ScreenHeight = 1.0f;
 float g_DeviceTilt = 0.0f;
 extern "C" {
 
-JNIEXPORT void JNICALL
-Java_com_example_racecast_MainActivity_nativeOnPause(JNIEnv* env, jobject thiz) {
-    LOGI("[LIFECYCLE] nativeOnPause called - Pausing Audio");
-    // Call the AudioManager function we created earlier to silence the engine
-    AUDIO.PauseAll();
-}
+    JNIEXPORT void JNICALL
+    Java_com_example_racecast_MainActivity_nativeOnPause(JNIEnv* env, jobject thiz) {
+        LOGI("[LIFECYCLE] nativeOnPause called - Pausing Audio");
+        // Call the AudioManager function we created earlier to silence the engine
+        AUDIO.PauseAll();
+    }
 
-JNIEXPORT void JNICALL
-Java_com_example_racecast_MainActivity_nativeOnResume(JNIEnv* env, jobject thiz) {
-    LOGI("[LIFECYCLE] nativeOnResume called - Resuming Audio");
-    // Resume the BGM or specific tracks
-    AUDIO.ResumeAll();
+    JNIEXPORT void JNICALL
+    Java_com_example_racecast_MainActivity_nativeOnResume(JNIEnv* env, jobject thiz) {
+        LOGI("[LIFECYCLE] nativeOnResume called - Resuming Audio");
+        // Resume the BGM or specific tracks
+        AUDIO.ResumeAll();
 }
 
     JNIEXPORT void JNICALL
@@ -52,25 +49,25 @@ Java_com_example_racecast_MainActivity_nativeOnResume(JNIEnv* env, jobject thiz)
         AUDIO.Init();
     }
 
-JNIEXPORT void JNICALL
-Java_com_example_racecast_MyRenderer_nativeInit(JNIEnv *env, jobject thiz)
-{
-    LOGI("[LIFECYCLE] nativeInit: Restoring OpenGL Context");
-    ShaderManager::GetInstance().Reset();
-    AssetManager::GetInstance().Reset();
-    // 1. Re-initialize the BatchRenderer (Generates new VAO/VBO handles)
-    BatchRenderer::GetInstance().Init();
+    JNIEXPORT void JNICALL
+    Java_com_example_racecast_MyRenderer_nativeInit(JNIEnv *env, jobject thiz)
+    {
+        LOGI("[LIFECYCLE] nativeInit: Restoring OpenGL Context");
+        ShaderManager::GetInstance().Reset();
+        AssetManager::GetInstance().Reset();
+        // 1. Re-initialize the BatchRenderer (Generates new VAO/VBO handles)
+        BatchRenderer::GetInstance().Init();
 
-    // 3. Asset Recovery: Re-upload textures for the current state
-    if (GSM.GetCurrentState() != nullptr) {
-        LOGI("[LIFECYCLE] Reloading assets for active state");
-        // Re-run Init on the current state to re-upload its textures/buffers
-        GSM.GetCurrentState()->Init();
-    } else {
-        // First time opening the app
-        GSM.ChangeState(new MenuState());
+        // 3. Asset Recovery: Re-upload textures for the current state
+        if (GSM.GetCurrentState() != nullptr) {
+            LOGI("[LIFECYCLE] Reloading assets for active state");
+            // Re-run Init on the current state to re-upload its textures/buffers
+            GSM.GetCurrentState()->Init();
+        } else {
+            // First time opening the app
+            GSM.ChangeState(new MenuState());
+        }
     }
-}
 
     JNIEXPORT void JNICALL
     Java_com_example_racecast_MyRenderer_nativeChanged(JNIEnv *env, jobject thiz, jint width, jint height)
@@ -94,19 +91,20 @@ Java_com_example_racecast_MyRenderer_nativeInit(JNIEnv *env, jobject thiz)
         GSM.Render();
     }
 
-JNIEXPORT void JNICALL
-Java_com_example_racecast_MyGLSurfaceView_nativeOnTouch(JNIEnv *env, jobject thiz,
-                                                        jint action, jint pointerId,
-                                                        jfloat x, jfloat y) {
+    JNIEXPORT void JNICALL
+    Java_com_example_racecast_MyGLSurfaceView_nativeOnTouch(JNIEnv *env, jobject thiz,
+                                                            jint action, jint pointerId,
+                                                            jfloat x, jfloat y) {
 
-    // 1. Convert pixels to NDC (-1 to 1)
-    // Use the screen dimensions we stored in nativeResize
-    float ndcX = (x / g_ScreenWidth) * 2.0f - 1.0f;
-    float ndcY = 1.0f - (y / g_ScreenHeight) * 2.0f;
+        // 1. Convert pixels to NDC (-1 to 1)
+        // Use the screen dimensions we stored in nativeResize
+        float ndcX = (x / g_ScreenWidth) * 2.0f - 1.0f;
+        float ndcY = 1.0f - (y / g_ScreenHeight) * 2.0f;
 
-    // 2. Pass to your InputManager
-    InputManager::GetInstance().HandleTouch(action, pointerId, ndcX, ndcY);
-}
+        // 2. Pass to your InputManager
+        InputManager::GetInstance().HandleTouch(action, pointerId, ndcX, ndcY);
+    }
+
     JNIEXPORT void JNICALL
     Java_com_example_racecast_MainActivity_setNativeTilt(JNIEnv* env, jobject thiz, jfloat tilt) {
         // Update your global variable or player steering here
