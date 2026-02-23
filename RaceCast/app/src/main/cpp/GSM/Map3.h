@@ -30,7 +30,7 @@ private:
     float aspect_ratio = 0.f; // x / y;
 
     //MAP NUMBER
-    int mapNumber = 1;
+    int mapNumber = 3;
 
     //SCORE
     bool score_saved = false;

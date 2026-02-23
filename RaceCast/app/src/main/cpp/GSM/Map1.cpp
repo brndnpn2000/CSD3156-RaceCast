@@ -128,6 +128,7 @@ void Map1::Update(float dt)
 
         if (CheckpointManager::GetInstance().isEnded())
         {
+            //save score
             if (!score_saved) {
                 final_time = race_timer;
                 score_saved = true;
@@ -202,7 +203,7 @@ void Map1::RenderUI()
             oss << std::fixed << std::setprecision(1) << race_timer;
             std::string racer_timer_str = oss.str();
 
-            BatchRenderer::GetInstance().RenderText(racer_timer_str, -0.15f, 0.8f, 0.2f, *font);
+            BatchRenderer::GetInstance().RenderText(racer_timer_str, -0.2f, 0.8f, 0.2f, *font);
         }
     }
     else // end screen comes out

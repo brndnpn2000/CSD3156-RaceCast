@@ -200,6 +200,13 @@ void Map3::RenderUI()
             std::string lap_text;
             lap_text += std::to_string((current_lap_int + 1) > 3 ? 3 : (current_lap_int + 1)) + " / " + std::to_string(total_lap_int);
             BatchRenderer::GetInstance().RenderText(lap_text, 0.4f, 0.7f, 0.2f, *font);
+
+            //display race timer
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(1) << race_timer;
+            std::string racer_timer_str = oss.str();
+
+            BatchRenderer::GetInstance().RenderText(racer_timer_str, -0.2f, 0.8f, 0.2f, *font);
         }
     }
     else // end screen comes out
