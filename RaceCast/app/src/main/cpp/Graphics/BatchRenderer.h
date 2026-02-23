@@ -8,7 +8,7 @@
 #include <android/asset_manager.h>
 #include <string>
 
-#define MAX_TRIANGLE 100
+#define MAX_TRIANGLE 64
 #define VERTICES_PER_TRIANGLE 3
 
 struct Vertex
