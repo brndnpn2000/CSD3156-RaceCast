@@ -35,20 +35,29 @@ void Map2::Init()
     aspect_ratio = (float)Globals::screen_size.first / (float)Globals::screen_size.second;
 
     environment.DebugAssetInit();
-    environment =
-            {
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // Row 0 (Top Wall)
-                    1, 0, 0, 0, 11, 0, 0, 0, 0, 1, // Row 1
-                    1, 0, 0, 0, 11, 0, 0, 0, 0, 1, // Row 2
-                    1, 0, 0, 1, 1, 1, 1, 0, 0, 1, // Row 3
-                    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // Row 4
-                    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, // Row 5
-                    1, 0, 0, 1, 1, 1, 1, 0, 0, 1, // Row 6
-                    1, 0, 0, 0, 11, 0, 0, 0, 0, 1, // Row 7
-                    1, 0, 0, 0, 11, 0, 0, 0, 0, 1, // Row 8
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1  // Row 9 (Bottom Wall)
-            };
-    CheckpointManager::GetInstance().Init<10,10>(environment);
+    environment = {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 0
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 1
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 2
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 3
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 4
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 5
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 6
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 7
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 8
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 9
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 00
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 00
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 02
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 03
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 04
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 05
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 06
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 07
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // Row 08
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  // Row 09
+    };
+    CheckpointManager::GetInstance().Init<20, 20>(environment);
 
     player.position = Vector2D(5.5,1.5);
     player.size = Vector2D(0.7,0.45);
@@ -154,7 +163,7 @@ void Map2::Update(float dt)
         player.onUpdate(dt, forward, backward);
 
         // collision
-        player.CollisionPhysics<10, 10>(environment, dt);
+        player.CollisionPhysics<20, 20>(environment, dt);
         player.SpeedRecalculate();
         if (environment.isACheckpoint(player.position.x, player.position.y))
         {
@@ -179,7 +188,7 @@ void Map2::Update(float dt)
 void Map2::RenderGame()
 {
     background.DrawUI();
-    player.RenderRayCast<10,10>(environment);
+    player.RenderRayCast<20, 20>(environment);
 
 }
 

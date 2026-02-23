@@ -63,7 +63,7 @@ private:
 
     // OBJECTS;
     UI_QUAD background;
-    Environment<10,10> environment;
+    Environment<20,20> environment;
     PlayerObject player;
 
     bool countdown_started = false;
