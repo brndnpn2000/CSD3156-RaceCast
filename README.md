@@ -35,7 +35,26 @@ The Android Activity acts as a host, passing hardware events (Touch, Tilt) and t
 | **Utilities** | Asset loading via `AAssetManager` and high-resolution Frame Timers. |
 
 
-
+### **3. Persistent Highscore**
+- Runtime (C++)
+    - Leaderboards live in C++: HighScore::mapScores[0..2] (3 maps → 3 std::vector<float>)
+    - When race ends (isEnded() turns true):
+        - capture once: final_time = race_timer
+        - save once: push into the correct map vector
+- Persistence (Kotlin + SharedPreferences)
+    - Kotlin stores each map’s leaderboard as a String in SharedPreferences:
+        - keys: lb_map_0, lb_map_1, lb_map_2
+        - value: serialized list like "[12.3, 13.9, 15.0]"
+- Load (read from disk → C++)
+    - MainActivity.onCreate():
+        - Kotlin reads saved strings from SharedPreferences
+        - Kotlin calls nativeSetLeaderboard(mapIndex, jsonString)
+        - C++ deserializes and fills mapScores[mapIndex]
+- Save (write to disk ← C++)
+    - MainActivity.onPause():
+     - Kotlin calls nativeGetLeaderboard(mapIndex)
+     - C++ serializes mapScores[mapIndex] and returns string
+     - Kotlin writes the string into SharedPreferences
 ---
 
 ## Controls
