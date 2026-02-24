@@ -65,6 +65,9 @@ public:
 
     void ResumeAll();
 
+    void StopAll();
+
+    void Shutdown();
 private:
     AudioManager() = default;
 
