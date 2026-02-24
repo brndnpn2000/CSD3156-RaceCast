@@ -56,7 +56,7 @@ public:
     // pause audio
     void StopAudio(const char* name);
 
-    // reset back to 0.00, but not working i think
+    // reset back to 0.00
     void ResetAudio(const char* name);
 
     void UpdateAudioVolume(const char* soundName, float volume);
@@ -65,9 +65,6 @@ public:
 
     void ResumeAll();
 
-    void StopAll();
-
-    void Shutdown();
 private:
     AudioManager() = default;
 

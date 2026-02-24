@@ -1,34 +1,90 @@
 package com.example.racecast
 
-import android.view.Surface
-import android.os.Bundle
-import android.content.res.AssetManager
-import android.opengl.GLSurfaceView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import android.os.Build
-import android.view.WindowManager
-
 import android.content.Context
+import android.content.res.AssetManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.opengl.GLSurfaceView
+import android.os.Build
+import android.os.Bundle
+import android.view.Surface
+import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
-// --- FIX 1: Add the Interface here ---
 class MainActivity : AppCompatActivity(), SensorEventListener {
 
-    external fun nativeSetLeaderboard(mapIndex: Int, json: String)
-    external fun nativeGetLeaderboard(mapIndex: Int): String
-
-    private external fun nativeInitAssetManager(assetManager: AssetManager)
-    private lateinit var gLView: MyGLSurfaceView
-
+    private lateinit var glView: MyGLSurfaceView
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
 
     private val prefs by lazy { getSharedPreferences("racecast_prefs", MODE_PRIVATE) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+
+        hideSystemUI()
+
+        nativeInitAssetManager(assets)
+        loadLeaderboards()
+
+        glView = MyGLSurfaceView(this).apply {
+            setEGLContextClientVersion(3)
+            setRenderer(MyRenderer())
+        }
+
+        setContentView(glView)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        nativeOnResume()
+        accelerometer?.let {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        }
+        glView.onResume()
+    }
+
+    override fun onPause() {
+        saveLeaderboards()
+        nativeOnPause()
+        glView.onPause()
+        sensorManager.unregisterListener(this)
+        super.onPause()
+    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                display
+            } else {
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay
+            }
+
+            val rotation = display?.rotation ?: Surface.ROTATION_0
+            var tilt = 0f
+
+            when (rotation) {
+                Surface.ROTATION_0 -> tilt = -event.values[0]
+                Surface.ROTATION_90 -> tilt = event.values[1]
+                Surface.ROTATION_180 -> tilt = event.values[0]
+                Surface.ROTATION_270 -> tilt = -event.values[1]
+            }
+
+            setNativeTilt(tilt)
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        // Required by SensorEventListener
+    }
 
     private fun loadLeaderboards() {
         for (map in 1..3) {
@@ -61,73 +117,16 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-
-        hideSystemUI()
-
-        nativeInitAssetManager(assets)
-        loadLeaderboards()
-
-        gLView = MyGLSurfaceView(this).apply {
-            setEGLContextClientVersion(3)
-            setRenderer(MyRenderer())
-        }
-
-        setContentView(gLView)
-    }
-
-    // --- FIX 2: Implement the required methods for the Sensor ---
-    override fun onSensorChanged(event: SensorEvent) {
-        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-            val display = windowManager.defaultDisplay
-            val rotation = display.rotation
-
-            var tilt = 0f
-
-            // Adjust which axis we use based on the current screen rotation
-            when (rotation) {
-                Surface.ROTATION_0 -> tilt = -event.values[0]       // Portrait
-                Surface.ROTATION_90 -> tilt = event.values[1]     // Landscape Left
-                Surface.ROTATION_180 -> tilt = event.values[0]    // Reverse Portrait
-                Surface.ROTATION_270 -> tilt = -event.values[1]      // Landscape Right
-            }
-
-            setNativeTilt(tilt)
-        }
-    }
-
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-        // Leave empty
-    }
-
-    override fun onPause() {
-        saveLeaderboards()
-        nativeOnPause()
-        super.onPause() // Only call this once
-        gLView.onPause()
-        sensorManager.unregisterListener(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        nativeOnResume()
-        accelerometer?.let {
-            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
-        }
-        gLView.onResume()
-    }
-
+    // JNI Methods
+    external fun nativeSetLeaderboard(mapIndex: Int, json: String)
+    external fun nativeGetLeaderboard(mapIndex: Int): String
     external fun setNativeTilt(tilt: Float)
     external fun nativeOnPause()
     external fun nativeOnResume()
+    private external fun nativeInitAssetManager(assetManager: AssetManager)
 
     companion object {
         init {
-            // Ensure this matches your CMake project name!
             System.loadLibrary("racecast")
         }
     }

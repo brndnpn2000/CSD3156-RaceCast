@@ -4,6 +4,7 @@
 #include "Environment.h"
 #include "UIHelper.h"
 #include "Globals.h"
+#include <cmath>
 
 /*
     None = 0,
@@ -11,8 +12,6 @@
     Tree = 2,
     Checkpoint = 3
 */
-
-
 
 extern float g_DeviceTilt;
 
@@ -28,51 +27,10 @@ public:
 
     Vector2D velocity;
 
-    PlayerObject() {}
+    PlayerObject();
 
-    void onUpdate(float dt, bool accelerate, bool reverse)
-    {
-        float rawTilt = g_DeviceTilt;
-
-        if (std::abs(rawTilt) < 0.5f) {
-            rawTilt = 0.0f;
-        }
-
-        float sensitivity = MAX_STEER / 7.0f;
-        float targetSteering = rawTilt * sensitivity;
-
-        float lerpSpeed = 10.0f;
-        steering += (targetSteering - steering) * lerpSpeed * dt;
-
-        // Clamp steering
-        if (steering > MAX_STEER) steering = MAX_STEER;
-        if (steering < -MAX_STEER) steering = -MAX_STEER;
-
-
-        float accel = 8.0f;
-        if (accelerate) {
-            speed += accel * dt;
-        } else if (reverse) {
-            speed -= accel * dt;
-        }
-
-        speed *= pow(0.95f, dt * 60.0f);
-
-
-        float turnFactor = 1.5f;
-        rotation += steering * speed * turnFactor * dt;
-
-        const float PI = 3.1415926535f;
-        float rad = rotation * (PI / 180.0f);
-
-        velocity.x = cosf(rad) * speed;
-        velocity.y = sinf(rad) * speed;
-    }
-
-    void SpeedRecalculate()
-    {
-        speed = sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-    }
+    void onUpdate(float dt, bool accelerate, bool reverse);
+    void SpeedRecalculate();
 
     template <unsigned int N, unsigned int M>
     void RenderRayCast(Environment<N, M>& env) {
@@ -122,47 +80,33 @@ public:
                 float correctedDist = perpWallDist * cosf((rayAngle - rotation) * (PI / 180.0f));
                 float lineHeight = 1.0f / (correctedDist + 0.0001f);
 
-                // --- 1. Calculate Texture U-Coordinate ---
-                float wallHitX; // Where exactly on the wall the ray hit (0.0 to 1.0)
+                float wallHitX;
                 if (side == 0) wallHitX = position.y + perpWallDist * rayDir.y;
                 else           wallHitX = position.x + perpWallDist * rayDir.x;
-                wallHitX -= floor(wallHitX); // Get only the fractional part
+                wallHitX -= floor(wallHitX);
 
-                // --- 2. Create Texture Coordinates ---
                 TextureCoordinate tc;
-                // Vertical strips use the full height (V: 0 to 1)
-                // but only a thin slice of the width (U: wallHitX)
-                tc.uv[0][0] = wallHitX; tc.uv[0][1] = 1.0f; // Top-Left of strip
-                tc.uv[1][0] = wallHitX; tc.uv[1][1] = 0.0f; // Bottom-Left
-                tc.uv[2][0] = wallHitX; tc.uv[2][1] = 0.0f; // Bottom-Right
-                tc.uv[3][0] = wallHitX; tc.uv[3][1] = 1.0f; // Top-Right
+                tc.uv[0][0] = wallHitX; tc.uv[0][1] = 1.0f;
+                tc.uv[1][0] = wallHitX; tc.uv[1][1] = 0.0f;
+                tc.uv[2][0] = wallHitX; tc.uv[2][1] = 0.0f;
+                tc.uv[3][0] = wallHitX; tc.uv[3][1] = 1.0f;
 
-                // --- 3. Shading Logic ---
-                // Base color (White)
                 float r = 1.0f, g = 1.0f, b = 1.0f;
+                if (side == 1) { r *= 0.7f; g *= 0.7f; b *= 0.7f; }
 
-                // Make Y-axis walls (side 1) darker for 3D depth
-                if (side == 1) {
-                    r *= 0.7f; g *= 0.7f; b *= 0.7f;
-                }
-
-                // Optional: Distance shading (darker further away)
                 float fog = 1.0f / (1.0f + correctedDist * 0.2f);
                 r *= fog; g *= fog; b *= fog;
 
-                // --- 4. Render ---
                 float xPos = ((float)i / (float)(numRays - 1)) * 2.0f - 1.0f;
                 float quadWidth = 2.05f / (float)numRays;
                 GLuint tex = AssetManager::GetInstance().GetTexture("fender.png");
 
-                // Assuming DrawQuad supports color tinting
                 BatchRenderer::GetInstance().DrawQuad(
                         xPos, 0.0f, quadWidth, lineHeight, tex, tc, r, g, b, 1.0f
                 );
             }
         }
     }
-
 
     template<unsigned int N, unsigned int M>
     void RenderDebug(Environment<N, M> env) {
@@ -182,11 +126,7 @@ public:
         GLuint playerTex = AssetManager::GetInstance().GetTexture("player.png");
 
         BatchRenderer::GetInstance().DrawQuad(
-                render_pos_x,
-                render_pos_y,
-                render_size_x,
-                render_size_y,
-                playerTex
+                render_pos_x, render_pos_y, render_size_x, render_size_y, playerTex
         );
     }
 
@@ -209,11 +149,9 @@ public:
                     { -hW, -hH }, {  hW, -hH }
             };
 
-            // 1. Move the player
             position.x += velocity.x * sub_dt;
             position.y += velocity.y * sub_dt;
 
-            // 2. Continuous Correction (Run twice for corner cases)
             for (int resolve_pass = 0; resolve_pass < 2; resolve_pass++) {
                 for (int i = 0; i < 4; i++) {
                     float rx = localCorners[i].x * c - localCorners[i].y * s;
@@ -225,22 +163,18 @@ public:
                     int gx = (int)std::floor(worldX);
                     int gy = (int)std::floor(worldY);
 
-                    if (gx < 0 || gx >= N || gy < 0 || gy >= M || env.isWall(gx, gy)) {
-                        // Find the overlap on both axes relative to the tile we hit
+                    if (gx < 0 || gx >= (int)N || gy < 0 || gy >= (int)M || env.isWall(gx, gy)) {
                         float tileCenterX = (float)gx + 0.5f;
                         float tileCenterY = (float)gy + 0.5f;
 
                         float dx = worldX - tileCenterX;
                         float dy = worldY - tileCenterY;
 
-                        // Resolve on the axis of LEAST penetration (shortest path out)
                         if (std::abs(dx) > std::abs(dy)) {
-                            // Push horizontally
                             float pushX = (dx > 0) ? ((float)gx + 1.001f) - worldX : ((float)gx - 0.001f) - worldX;
                             position.x += pushX;
-                            velocity.x *= -0.1f; // Dampen speed
+                            velocity.x *= -0.1f;
                         } else {
-                            // Push vertically
                             float pushY = (dy > 0) ? ((float)gy + 1.001f) - worldY : ((float)gy - 0.001f) - worldY;
                             position.y += pushY;
                             velocity.y *= -0.1f;
@@ -250,7 +184,6 @@ public:
             }
         }
     }
-
 };
 
 #endif
